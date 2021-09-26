@@ -1,70 +1,75 @@
-# Getting Started with Create React App
+## 프로젝트는 개요
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+hogaplay 라는 주식 모의투자 복기사이트가 존재한다. 코인도  실시간 데이터로 복기할수있는 사이트를 만들어보자
 
-## Available Scripts
+## SETUP
 
-In the project directory, you can run:
+```
+npx create-react-app
+npm i styled-components
+npm i react-router-dom
+npm i react-helmet-async
+```
 
-### `yarn start`
+## 기본 UI 계획
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+![image](https://user-images.githubusercontent.com/56789064/134822980-b5fb9318-0acc-449f-bff7-a6cd3ce227ce.png)
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
 
-### `yarn test`
+업비트의 UI를 따라서 만들계획
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `yarn build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 사용될 예상 라우터
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. 메인 페이지
+2. 거래소 페이지
+3. 내 보유 코인 페이지
+4. 회원가입 페이지
+5. 입출금 페이지 ( 호가플레이에선 포인트였음 )
+6. 고객센터 페이지
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+일단 저 정도 페이지가 기본적으로 사용될것으로 추정
 
-### `yarn eject`
+## 라우터 구상
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+1. 메인페이지
+2. 거래소 페이지
+3. 현재 업비트에서는 우측의 코인명을 클릭할때 라우터가 변경됨. 
+   1. 거래소 url : https://upbit.com/exchange
+   2. 거래소 코인 url  :  https://upbit.com/exchange?code=CRIX.UPBIT.KRW-BTC
+   3. 우측의 코인명을 클릭할때마다 페이지가 변화되고 컴포넌트가 변경됨.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+나머지는 차차 구상해보도록 함.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-## Learn More
+## 9/27 
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+서버에서 날려주는 특정 코인에 대한 정보를 요청하면 아래와 같은 데이터가 리턴됨
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+db에서 조건문으로 해당시간 되면 호가창변화하게 => 이건 얘기를 좀 해봐야할거같다.
 
-### Code Splitting
+1초마다 데이터를 받아와서 갱신하는 방식이 맞을지. 아니면 모든 데이터를 한번에 받아오는 방식이 맞을지
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+또는 데이터를 나눠서 받아오는 방식에 대해서도 알아봐야될거같다. ( 노드에는 pipe가 존재하는데.. 서버가 아직 어떨지 모르니깐.. )
 
-### Analyzing the Bundle Size
+![image](https://user-images.githubusercontent.com/56789064/134822963-71a46c9c-e62a-4d18-a78d-eed3355a2d43.png)
+![image](https://user-images.githubusercontent.com/56789064/134822973-b914fef9-7403-4b07-a04e-c98c9913f5ab.png)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
-### Making a Progressive Web App
+예상 플로우를 그려보면
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+프론트에서 모의투자(데이터를받을) 날짜를 정함
+날짜를 정하고 코인을 정함
+날짜와 코인에 맞는 데이터를 요청해서 가져옴
+가져온 데이터를 화면에 표시
+재생(시작)버튼을 누르면 호가창이 1초(… 이건 db에서 정해주는대로 만들기) 마다 갱신됨
 
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+상태관리는 일단 context API 사용, 필요한 상태 리스트
+	1.	날짜 선택하였나?
+	2.	코인을 선택하였나?
+	3.	시작버튼을 눌렀나?
+	4.	로딩상태인가?
+	5.	로딩이 끝난후 성공/실패 상태인가?
+	6.	시작버튼을 누른후 진행시각(timestamp)
