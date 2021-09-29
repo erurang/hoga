@@ -1,6 +1,7 @@
-import { useContext, useEffect, useReducer } from "react";
+import { useContext, useEffect } from "react";
 import styled from "styled-components";
-import reducer from "../context/reducer";
+import { ExchangeContext } from "../context/exchange";
+import Timer from "./timer";
 
 const Container = styled.div`
   width: 490px;
@@ -24,6 +25,7 @@ const AskPrice = styled.div`
   padding-top: 15px;
   padding-right: 5px;
 `;
+
 const BidPrice = styled.div`
   text-align: left;
   width: 125px;
@@ -45,10 +47,23 @@ const OrderBookTitle = styled.span`
 `;
 
 const OrderBook = (props) => {
+  const { state, dispatch } = useContext(ExchangeContext);
+
   return (
-    <Container>
+    <>
       <OrderBookTitle>일반호가</OrderBookTitle>
-    </Container>
+      <Container>
+        {/* 데이터가 존재하는지도 체크해야함. 그 후에 호가보여주기 */}
+        {state.dayTimestamp && state.selectCoin ? (
+          <>
+            <h1>존재함</h1>
+            <Timer />
+          </>
+        ) : (
+          <h1>존재안함</h1>
+        )}
+      </Container>
+    </>
   );
 };
 

@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext, useEffect, useReducer } from "react";
 import styled from "styled-components";
 import SelectCoin from "../components/coin";
 import Calendar from "../components/date";
+import OrderBook from "../components/orderbook";
 
 const Container = styled.div`
   background-color: "#E8ECF0";
@@ -14,6 +15,7 @@ const Exchange = () => {
     <Container>
       <Calendar />
       <SelectCoin />
+      <OrderBook />
     </Container>
   );
 };

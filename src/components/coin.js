@@ -1,16 +1,19 @@
 import { useContext, useReducer } from "react";
-import { SelectCoinContext } from "../context/exchange";
+import { ExchangeContext } from "../context/exchange";
 import reducer from "../context/reducer";
 
 const SelectCoin = () => {
   // coinList 가져와야함..
-
   const CoinList = ["클레이튼", "한남새고", "스윗한남"];
 
-  const [selectedCoin, dispatch] = useReducer(
-    reducer,
-    useContext(SelectCoinContext)
-  );
+  //   const [selectedCoin, dispatch] = useReducer(
+  //     reducer,
+  //     useContext(ExchangeContext)
+  //   );
+
+  const { state, dispatch } = useContext(ExchangeContext);
+
+  console.log(state);
 
   return (
     <>
@@ -25,7 +28,7 @@ const SelectCoin = () => {
           {n}
         </button>
       ))}
-      <h1> 선택된 코인 {selectedCoin}</h1>
+      <h1>선택된 코인 {state.selectCoin}</h1>
     </>
   );
 };
