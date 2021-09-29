@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import Calendar from "../screens/date";
+import SelectCoin from "../components/coin";
+import Calendar from "../components/date";
 
 const Container = styled.div`
   background-color: "#E8ECF0";
@@ -12,6 +13,7 @@ const Exchange = () => {
   return (
     <Container>
       <Calendar />
+      <SelectCoin />
     </Container>
   );
 };
