@@ -1,5 +1,13 @@
 function reducer(state, action) {
   switch (action.type) {
+    case "UPDATE_TIMESTAMP":
+      const day = new Date(action.event);
+      const year = day.getFullYear();
+      const month = day.getMonth();
+      const date = day.getDate();
+
+      return +new Date(`${year}-${month}-${date} 09:00:00`);
+
     case "increase":
       return state + 1;
     case "isPlay":

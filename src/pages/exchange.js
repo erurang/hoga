@@ -1,6 +1,4 @@
 import React from "react";
-import OrderBook from "../screens/orderbook";
-import Timer from "../screens/timer";
 import styled from "styled-components";
 import Calendar from "../screens/date";
 
@@ -14,9 +12,6 @@ const Exchange = () => {
   return (
     <Container>
       <Calendar />
-      {/* 날짜, 종목명 */}
-      <OrderBook />
-      {/* 호가박스 */}
     </Container>
   );
 };

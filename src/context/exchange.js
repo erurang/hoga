@@ -1,34 +1,40 @@
 import React, { createContext } from "react";
 import coin from "../db/sample.json";
 
-const initialState = {
-  timestamp: Object.values(coin.timestamp),
-  orderbook: Object.values(coin.orderbook_units),
-  total_ask_size: Object.values(coin.total_ask_size),
-  total_bid_size: Object.values(coin.total_bid_size),
-};
+// const initialState = {
+//   timestamp: Object.values(coin.timestamp),
+//   orderbook: Object.values(coin.orderbook_units),
+//   total_ask_size: Object.values(coin.total_ask_size),
+//   total_bid_size: Object.values(coin.total_bid_size),
+// };
 
-const number = 0;
-const isPlay = false;
+// 타이머
+const toggleTimerState = false;
+export const ToggleTimerContext = createContext();
 
-export const ExchangeContext = createContext();
-export const ExchangeIndexContext = createContext();
-export const ExchangePlayContext = createContext();
+// 타이머 타임스탬프
+const timerTimestampState = createContext();
+export const TimerTimerstampContext = createContext();
 
-const day = +new Date("2021-09-26 09:00:00");
-export const ExchangeDayContext = createContext();
+// 날짜
+const dayState = null;
+export const SelectDayContext = createContext();
+
+// 코인선택
+const coinState = null;
+export const SelectCoinContext = createContext();
 
 const ExchangeStore = (props) => {
   return (
-    <ExchangeContext.Provider value={initialState}>
-      <ExchangeIndexContext.Provider value={number}>
-        <ExchangePlayContext.Provider value={isPlay}>
-          <ExchangeDayContext.Provider value={day}>
+    <SelectDayContext.Provider value={dayState}>
+      <SelectCoinContext.Provider value={coinState}>
+        <ToggleTimerContext.Provider value={toggleTimerState}>
+          <TimerTimerstampContext.Provider value={timerTimestampState}>
             {props.children}
-          </ExchangeDayContext.Provider>
-        </ExchangePlayContext.Provider>
-      </ExchangeIndexContext.Provider>
-    </ExchangeContext.Provider>
+          </TimerTimerstampContext.Provider>
+        </ToggleTimerContext.Provider>
+      </SelectCoinContext.Provider>
+    </SelectDayContext.Provider>
   );
 };
 export default ExchangeStore;
