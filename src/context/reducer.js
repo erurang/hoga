@@ -40,6 +40,7 @@ function reducer(state, action) {
       return { ...state, data: null, toggleTimer: false, index: 0 };
 
     case "TOGGLE_PLAY":
+      console.log("state.index :", state.index);
       return {
         ...state,
         toggleTimer: !state.toggleTimer,
@@ -48,8 +49,18 @@ function reducer(state, action) {
     case "INCREASE_INDEX":
       return {
         ...state,
-        index: state.index + 1,
+        range: false,
+        index: +state.index + 1,
       };
+
+    case "RANGE_MOVE_INDEX":
+      return {
+        ...state,
+        index: +action.index,
+      };
+
+    case "RANGE_UPDATE_TIMER_TIMESTAMP":
+      return { ...state, timerTimestamp: action.timerTimestamp };
 
     default:
       throw new Error("잘못된 액션타입");

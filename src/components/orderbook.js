@@ -91,14 +91,16 @@ const OrderBook = () => {
       state?.timerTimestamp &&
       state.timerTimestamp >= state?.data?.timestamp[state.index]
     ) {
-      console.log("타이머시각 : ", state.timerTimestamp);
-      console.log("업데이트 : ", state.data.timestamp[state.index]);
       setOrderbookList({
         orderbook: state.data.orderbook[state.index],
         total_ask_size: state.data.total_ask_size[state.index],
         total_bid_size: state.data.total_bid_size[state.index],
       });
-      dispatch({ type: "INCREASE_INDEX" });
+
+      if (state.toggleTimer) {
+        console.log("올라감");
+        dispatch({ type: "INCREASE_INDEX" });
+      }
     }
   }, [state.timerTimestamp]);
 
@@ -113,7 +115,6 @@ const OrderBook = () => {
         state.data ? (
           <>
             <Timer />
-            {state.index}
             {orderbookList?.orderbook
               ?.sort((a, b) => b.ask_price - a.ask_price)
               .map((n, i) => (

@@ -58,6 +58,21 @@ const Timer = () => {
     }
   }, [hours, minutes, seconds, milliseconds]);
 
+  function handleRange(event) {
+    if (state.toggleTimer) dispatch({ type: "TOGGLE_PLAY" });
+    const index = event.target.value;
+    dispatch({ type: "RANGE_MOVE_INDEX", index });
+    dispatch({
+      type: "RANGE_UPDATE_TIMER_TIMESTAMP",
+      timerTimestamp: state.data.timestamp[+index],
+    });
+    const time = new Date(state.data.timestamp[+index]);
+
+    setHours(time.getHours());
+    setMinutes(time.getMinutes());
+    setSeconds(time.getSeconds());
+  }
+
   return (
     <>
       <div>
@@ -67,8 +82,16 @@ const Timer = () => {
           {seconds < 10 ? `0${seconds}` : seconds}:
           {milliseconds < 10 ? `0${milliseconds}` : milliseconds}
         </span>
+        <button onClick={() => dispatch({ type: "TOGGLE_PLAY" })}>
+          Play {state.index}
+        </button>
       </div>
-      <button onClick={() => dispatch({ type: "TOGGLE_PLAY" })}>Play</button>
+      <input
+        onChange={(e) => handleRange(e)}
+        type="range"
+        min="0"
+        max={state.data.timestamp.length - 1}
+      ></input>
     </>
   );
 };
