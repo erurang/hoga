@@ -1,11 +1,8 @@
 import Day from "react-calendar";
 import { ExchangeContext } from "../context/exchange";
-import { useContext, useReducer } from "react";
-import reducer from "../context/reducer";
+import { useContext } from "react";
 
 const Calendar = () => {
-  // const [time, dispatch] = useReducer(reducer, useContext(ExchangeContext));
-
   const { state, dispatch } = useContext(ExchangeContext);
 
   return (

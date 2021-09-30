@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer } from "react";
+import React from "react";
 import styled from "styled-components";
 import SelectCoin from "../components/coin";
 import Calendar from "../components/date";
