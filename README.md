@@ -137,7 +137,7 @@ db에서 조건문으로 해당시간 되면 호가창변화하게 => 이건 얘
 
 이제 남은 작업은 현재가 대비%, 각 timestamp의 체결량 , 컴포넌트 최적화 , CSS, db <-> front api 실험 정도 남은거같다.
 
-## 10/2~
+## 10/2~4
 
 새로운 타이머 기능을 추가하면서 우연히 발견한 문제점
 
@@ -173,3 +173,58 @@ db에서 조건문으로 해당시간 되면 호가창변화하게 => 이건 얘
 
 즉 나는 상태를 좀더 세부적으로 나눌 필요성이 생겼다.
 
+==> 나는 기존의 상태관리를 이렇게 바꿧다
+
+- ### Context API로 전역으로 관리하던 데이터들
+   - 날짜
+   - 코인선택여부
+   - 타이머의 시작여부
+   - 타이머의 0.01초 마다의 timestamp 갱신
+   - 날짜와 코인을 선택후 불러올 코인 데이터 정보
+
+- ### Context API
+   - 날짜 선택여부
+   - 코인 선택여부
+
+=> 날짜 && 코인 === true 라면 `ChartContainer`에서 useEffect를 통해 API 요청
+
+이때 `Chart` 컴포넌트를 생성시키고 `Chart` 컴포넌트에서 코인의 데이터를 관리함
+
+코인의 데이터를 props로 `timer` 컴포넌트로 넘김 `timer`에선 시간 상태만 관리
+
+`timer`컴포넌트에서 `orderbook` 화면으로 넘겨 전체 체결화면을 만듬
+
+이제 0.01초씩 시간이 지날때마다 불필요한 렌더링이 사라지게 되었음.
+
+## 10/5~
+
+체결데이터로 호가만들기 시작. 내가 api 테스트할려고 임의 서버로 만들어서 아래처럼 관리함
+
+```
+getData() {
+    return {
+      // data : {} 얘도 고쳐놀예정
+      coinName: Object.values(coin.code)[0],
+      orderbook: Object.values(coin.orderbook_units).slice(0, 500),
+      timestamp: Object.values(coin.timestamp).slice(0, 500),
+      total_ask_size: Object.values(coin.total_ask_size).slice(0, 500),
+      total_bid_size: Object.values(coin.total_bid_size).slice(0, 500),
+      trade: {
+        prev_closing_price: Object.values(trade.prev_closing_price)[0],
+        // trade timestamp랑 timestamp랑 뭔차인지모르겟다
+        timestamp: Object.values(trade.timestamp),
+        change: Object.values(trade.change).slice(0, 500),
+        change_price: Object.values(trade.change_price).slice(0, 500),
+        trade_price: Object.values(trade.trade_price).slice(0, 500),
+        trade_volume: Object.values(trade.trade_volume).slice(0, 500),
+        ask_bid: Object.values(trade.ask_bid).slice(0, 500),
+      },
+    };
+  }
+```
+
+아마 이렇게하면 되지않을까 싶다
+
+1. `Chart` 컴포넌트에서 한번에 데이터를 다 받아온다 
+2. `timer` 컴포넌트에서 현재 `timestamp`와 `tradedata`를 `trade` 컴포넌트로 넘겨줌
+3. `trade` 컴포넌트에서 받은 데이터를 표시함

@@ -4,7 +4,6 @@ function reducer(state, action) {
   switch (action.type) {
     case actionType.TIMER_TIMESTAMP:
       return { ...state };
-
     case actionType.SELECT_DAY:
       return { ...state, date: action.timestamp };
     default:

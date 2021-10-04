@@ -9,7 +9,6 @@ const Timer = ({
   orderbook,
   total_ask_size,
   total_bid_size,
-  dispatch,
 }) => {
   const newDate = useMemo(() => new Date(date), [date]);
 
@@ -26,26 +25,42 @@ const Timer = ({
     timestamp: +newDate,
   });
 
-  console.log(time.timestamp);
+  // console.log(time.timestamp);
 
   const [isPlay, setIsPlay] = useState(false);
   const [index, setIndex] = useState(0);
 
-  function handleTimerButton(num) {
+  function handlePlusTimerButton(num) {
+    setIsPlay(false);
     const number = +num.target.innerText;
 
     let plusTime = 0;
 
-    if (number === 1) plusTime = 60000;
+    if (number === 1) plusTime = 5000;
     else if (number === 5) plusTime = 300000;
     else if (number === 10) plusTime = 600000;
     else if (number === 30) plusTime = 1800000;
 
-    console.log("plustime:", plusTime);
-    setTime({
-      ...time,
-      timestamp: time.timestamp + plusTime,
+    const newDate = new Date(time.timestamp + plusTime);
+
+    const update = timestamp.findIndex((t) => {
+      return t >= +newDate + plusTime;
     });
+
+    console.log(update);
+
+    if (update !== -1) {
+      setTime({
+        hours: newDate.getHours(),
+        minutes: newDate.getMinutes(),
+        seconds: newDate.getSeconds(),
+        milliseconds: newDate.getMilliseconds(),
+        timestamp: +newDate,
+      });
+      setIndex(update);
+    } else {
+      // ~시각 데이터가 존재하지않습니다 팝업뛰우던지 어떨지는 선택으로냅둠
+    }
   }
 
   useEffect(() => {
@@ -62,7 +77,7 @@ const Timer = ({
     // useState의 렌더링 순서가 어떻게 되는지 공부해볼것!!
     // 페인팅부터 어떻게하는가에대해..
 
-    if (time.milliseconds === 99) {
+    if (time.milliseconds >= 99) {
       setTime({
         ...time,
         milliseconds: 0,
@@ -70,7 +85,7 @@ const Timer = ({
       });
     }
 
-    if (time.seconds === 60) {
+    if (time.seconds >= 60) {
       setTime({
         ...time,
         seconds: 0,
@@ -78,7 +93,7 @@ const Timer = ({
       });
     }
 
-    if (time.minutes === 60) {
+    if (time.minutes >= 60) {
       setTime({
         ...time,
         minutes: 0,
@@ -108,10 +123,10 @@ const Timer = ({
         {time.hours}:{time.minutes}:{time.seconds}:{time.milliseconds}
       </h1>
       <button onClick={() => setIsPlay((prev) => !prev)}>play</button>
-      <TimerButton number={1} handleTimerButton={handleTimerButton} />
-      <TimerButton number={5} handleTimerButton={handleTimerButton} />
-      <TimerButton number={10} handleTimerButton={handleTimerButton} />
-      <TimerButton number={30} handleTimerButton={handleTimerButton} />
+      <TimerButton number={1} handlePlusTimerButton={handlePlusTimerButton} />
+      <TimerButton number={5} handlePlusTimerButton={handlePlusTimerButton} />
+      <TimerButton number={10} handlePlusTimerButton={handlePlusTimerButton} />
+      <TimerButton number={30} handlePlusTimerButton={handlePlusTimerButton} />
       <OrderBook
         index={index}
         orderbook={orderbook}

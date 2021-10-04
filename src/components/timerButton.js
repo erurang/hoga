@@ -1,5 +1,5 @@
-const TimerButton = ({ number, handleTimerButton }) => {
-  return <button onClick={(e) => handleTimerButton(e)}>{number}</button>;
+const TimerButton = ({ number, handlePlusTimerButton }) => {
+  return <button onClick={(e) => handlePlusTimerButton(e)}>{number}</button>;
 };
 
 export default TimerButton;
