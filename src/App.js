@@ -3,8 +3,8 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import router from "./router";
 import Home from "./pages/home";
 import Exchange from "./pages/exchange";
-import ExchangeStore from "./context/exchange";
-import GlobalStyles from "./styles/styles";
+import GlobalStyles from "./styles/global";
+import { SelectStore, TimerStore } from "./context/exchange/exchange";
 
 function App() {
   return (
@@ -15,9 +15,11 @@ function App() {
             <Home />
           </Route>
           <Route path={router.EXCHANGE}>
-            <ExchangeStore>
-              <Exchange />
-            </ExchangeStore>
+            <SelectStore>
+              <TimerStore>
+                <Exchange />
+              </TimerStore>
+            </SelectStore>
           </Route>
         </GlobalStyles>
       </Switch>

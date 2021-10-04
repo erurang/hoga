@@ -1,23 +1,15 @@
-import React from "react";
-import styled from "styled-components";
-import SelectCoin from "../components/coin";
-import Calendar from "../components/date";
-import OrderBook from "../components/orderbook";
-
-const Container = styled.div`
-  background-color: "#E8ECF0";
-  width: 100vh;
-  height: 100vh;
-`;
+import Calendar from "../components/calendar";
+import Chart from "../components/chartContainer";
 
 const Exchange = () => {
   return (
-    <Container>
+    <>
       <Calendar />
-      <SelectCoin />
-      <OrderBook />
-    </Container>
+      <Chart />
+    </>
   );
+
+  //   return <h1>Exchange</h1>;
 };
 
 export default Exchange;

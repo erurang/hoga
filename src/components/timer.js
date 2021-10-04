@@ -1,97 +1,123 @@
-import React, { useContext, useEffect, useState } from "react";
-import { ExchangeContext } from "../context/exchange";
+import { useState, useEffect, useMemo } from "react";
+import actionType from "../context/exchange/action";
+import OrderBook from "./orderbook";
+import TimerButton from "./timerButton";
 
-const Timer = () => {
-  const { state, dispatch } = useContext(ExchangeContext);
-  const time = new Date(state.dayTimestamp);
+const Timer = ({
+  date,
+  timestamp,
+  orderbook,
+  total_ask_size,
+  total_bid_size,
+  dispatch,
+}) => {
+  const newDate = useMemo(() => new Date(date), [date]);
 
-  const [hours, setHours] = useState(time.getHours());
-  const [minutes, setMinutes] = useState(time.getMinutes());
-  const [seconds, setSeconds] = useState(time.getSeconds());
-  const [milliseconds, setMilliseconds] = useState(time.getMilliseconds());
+  // 여기서 날짜의 타임스탬프도 가지고있고,
+  // 타이머의 타임스탬프도 가지고있고,
+  // 데이터도 가지고있고
+  // 전역으로 상태를 관리할 필요가 없어진다.
 
-  useEffect(() => {
-    if (state.toggleTimer) {
-      const interval = setInterval(() => {
-        setMilliseconds((prev) => prev + 1);
+  const [time, setTime] = useState({
+    hours: newDate.getHours(),
+    minutes: newDate.getMinutes(),
+    seconds: newDate.getSeconds(),
+    milliseconds: newDate.getMilliseconds(),
+    timestamp: +newDate,
+  });
 
-        const timerTimestamp = +new Date(
-          `${time.getFullYear()}-${
-            time.getMonth() + 1
-          }-${time.getDate()} ${hours}:${minutes}:${seconds}:${milliseconds}`
-        );
+  console.log(time.timestamp);
 
-        dispatch({ type: "UPDATE_TIMER_TIMESTAMP", timerTimestamp });
-      }, 10);
+  const [isPlay, setIsPlay] = useState(false);
+  const [index, setIndex] = useState(0);
 
-      return () => clearInterval(interval);
-    } else {
-      console.log("정지");
-    }
-  }, [
-    state.toggleTimer,
-    dispatch,
-    hours,
-    minutes,
-    seconds,
-    milliseconds,
-    time,
-  ]);
+  function handleTimerButton(num) {
+    const number = +num.target.innerText;
 
-  useEffect(() => {
-    if (milliseconds === 99) {
-      // timestamp가 1초에 1000씩 오름
-      // 그럼 0.1초에는 100
-      // 0.01초에는 10
-      setMilliseconds(0);
-      setSeconds((prev) => prev + 1);
-    }
+    let plusTime = 0;
 
-    if (seconds === 60) {
-      setSeconds(0);
-      setMinutes((prev) => prev + 1);
-    }
+    if (number === 1) plusTime = 60000;
+    else if (number === 5) plusTime = 300000;
+    else if (number === 10) plusTime = 600000;
+    else if (number === 30) plusTime = 1800000;
 
-    if (minutes === 60) {
-      setMinutes(0);
-      setHours((prev) => prev + 1);
-    }
-  }, [hours, minutes, seconds, milliseconds]);
-
-  function handleRange(event) {
-    if (state.toggleTimer) dispatch({ type: "TOGGLE_PLAY" });
-    const index = event.target.value;
-    dispatch({ type: "RANGE_MOVE_INDEX", index });
-    dispatch({
-      type: "RANGE_UPDATE_TIMER_TIMESTAMP",
-      timerTimestamp: state.data.timestamp[+index],
+    console.log("plustime:", plusTime);
+    setTime({
+      ...time,
+      timestamp: time.timestamp + plusTime,
     });
-    const time = new Date(state.data.timestamp[+index]);
-
-    setHours(time.getHours());
-    setMinutes(time.getMinutes());
-    setSeconds(time.getSeconds());
   }
+
+  useEffect(() => {
+    if (!isPlay) return;
+
+    const interval = setInterval(() => {
+      setTime({
+        ...time,
+        milliseconds: time.milliseconds + 1,
+        timestamp: time.timestamp + 10,
+      });
+    }, 10);
+
+    // useState의 렌더링 순서가 어떻게 되는지 공부해볼것!!
+    // 페인팅부터 어떻게하는가에대해..
+
+    if (time.milliseconds === 99) {
+      setTime({
+        ...time,
+        milliseconds: 0,
+        seconds: time.seconds + 1,
+      });
+    }
+
+    if (time.seconds === 60) {
+      setTime({
+        ...time,
+        seconds: 0,
+        minutes: time.minutes + 1,
+      });
+    }
+
+    if (time.minutes === 60) {
+      setTime({
+        ...time,
+        minutes: 0,
+        hours: time.hours + 1,
+      });
+    }
+
+    // update orderbook
+
+    if (time.timestamp >= timestamp[index]) {
+      setIndex((prev) => prev + 1);
+    }
+
+    return () => clearInterval(interval);
+  }, [isPlay, time]);
+
+  // console.log(
+  //   new Date(time.timestamp),
+  //   time.timestamp,
+  //   new Date(timestamp[index]),
+  //   timestamp[index]
+  // );
 
   return (
     <>
-      <div>
-        <span>
-          {hours < 10 ? `0${hours}` : hours}:
-          {minutes < 10 ? `0${minutes}` : minutes}:
-          {seconds < 10 ? `0${seconds}` : seconds}:
-          {milliseconds < 10 ? `0${milliseconds}` : milliseconds}
-        </span>
-        <button onClick={() => dispatch({ type: "TOGGLE_PLAY" })}>
-          Play {state.index}
-        </button>
-      </div>
-      <input
-        onChange={(e) => handleRange(e)}
-        type="range"
-        min="0"
-        max={state.data.timestamp.length - 1}
-      ></input>
+      <h1>
+        {time.hours}:{time.minutes}:{time.seconds}:{time.milliseconds}
+      </h1>
+      <button onClick={() => setIsPlay((prev) => !prev)}>play</button>
+      <TimerButton number={1} handleTimerButton={handleTimerButton} />
+      <TimerButton number={5} handleTimerButton={handleTimerButton} />
+      <TimerButton number={10} handleTimerButton={handleTimerButton} />
+      <TimerButton number={30} handleTimerButton={handleTimerButton} />
+      <OrderBook
+        index={index}
+        orderbook={orderbook}
+        total_ask_size={total_ask_size}
+        total_bid_size={total_bid_size}
+      />
     </>
   );
 };
