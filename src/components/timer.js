@@ -1,14 +1,24 @@
 import { useState, useEffect, useMemo } from "react";
-import actionType from "../context/exchange/action";
+import CoinTitle from "./coinTitle";
 import OrderBook from "./orderbook";
 import TimerButton from "./timerButton";
+import Trade from "./trade";
 
 const Timer = ({
+  coinName,
   date,
   timestamp,
   orderbook,
   total_ask_size,
   total_bid_size,
+  // trade
+  ask_bid,
+  change,
+  change_price,
+  prev_closing_price,
+  trade_price,
+  trade_timestamp,
+  trade_volume,
 }) => {
   const newDate = useMemo(() => new Date(date), [date]);
 
@@ -36,18 +46,17 @@ const Timer = ({
 
     let plusTime = 0;
 
-    if (number === 1) plusTime = 5000;
+    if (number === 1) plusTime = 60000;
     else if (number === 5) plusTime = 300000;
     else if (number === 10) plusTime = 600000;
     else if (number === 30) plusTime = 1800000;
 
     const newDate = new Date(time.timestamp + plusTime);
 
+    // 이거 수정해야함.
     const update = timestamp.findIndex((t) => {
       return t >= +newDate + plusTime;
     });
-
-    console.log(update);
 
     if (update !== -1) {
       setTime({
@@ -122,17 +131,36 @@ const Timer = ({
       <h1>
         {time.hours}:{time.minutes}:{time.seconds}:{time.milliseconds}
       </h1>
+      <CoinTitle
+        prev_closing_price={prev_closing_price}
+        change={change}
+        change_price={change_price}
+        coinName={coinName}
+        index={index}
+      />
       <button onClick={() => setIsPlay((prev) => !prev)}>play</button>
       <TimerButton number={1} handlePlusTimerButton={handlePlusTimerButton} />
       <TimerButton number={5} handlePlusTimerButton={handlePlusTimerButton} />
       <TimerButton number={10} handlePlusTimerButton={handlePlusTimerButton} />
       <TimerButton number={30} handlePlusTimerButton={handlePlusTimerButton} />
-      <OrderBook
-        index={index}
-        orderbook={orderbook}
-        total_ask_size={total_ask_size}
-        total_bid_size={total_bid_size}
-      />
+      <div style={{ display: "flex" }}>
+        <OrderBook
+          index={index}
+          orderbook={orderbook}
+          total_ask_size={total_ask_size}
+          total_bid_size={total_bid_size}
+          prev_closing_price={prev_closing_price}
+          trade_price={trade_price}
+        />
+        <Trade
+          ask_bid={ask_bid}
+          prev_closing_price={prev_closing_price}
+          trade_price={trade_price}
+          trade_timestamp={trade_timestamp}
+          trade_volume={trade_volume}
+          timestamp={time.timestamp}
+        />
+      </div>
     </>
   );
 };

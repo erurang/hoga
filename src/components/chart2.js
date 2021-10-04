@@ -30,6 +30,15 @@ const Chart = ({ coin, date }) => {
       const total_ask_size = getData.data.total_ask_size;
       const total_bid_size = getData.data.total_bid_size;
 
+      const getTrade = getData.data.trade;
+      const ask_bid = getTrade.ask_bid;
+      const change = getTrade.change;
+      const change_price = getTrade.change_price;
+      const prev_closing_price = getTrade.prev_closing_price;
+      const trade_price = getTrade.trade_price;
+      const trade_timestamp = getTrade.timestamp;
+      const trade_volume = getTrade.trade_volume;
+
       setData({
         ...data,
         data: {
@@ -38,6 +47,15 @@ const Chart = ({ coin, date }) => {
           orderbook,
           total_ask_size,
           total_bid_size,
+        },
+        trade: {
+          ask_bid,
+          change,
+          change_price,
+          prev_closing_price,
+          trade_price,
+          trade_timestamp,
+          trade_volume,
         },
         loading: false,
       });
@@ -59,10 +77,20 @@ const Chart = ({ coin, date }) => {
       </h1>
       <Timer
         date={date}
+        // hoga
+        coinName={data.data.coinName}
         orderbook={data.data.orderbook}
         timestamp={data.data.timestamp}
         total_ask_size={data.data.total_ask_size}
         total_bid_size={data.data.total_bid_size}
+        // trade
+        ask_bid={data.trade.ask_bid}
+        change={data.trade.change}
+        change_price={data.trade.change_price}
+        prev_closing_price={data.trade.prev_closing_price}
+        trade_price={data.trade.trade_price}
+        trade_timestamp={data.trade.trade_timestamp}
+        trade_volume={data.trade.trade_volume}
       />
     </>
   );
