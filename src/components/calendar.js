@@ -15,7 +15,7 @@ const Calendar = () => {
 
     dispatch({
       type: actionType.SELECT_DAY,
-      timestamp: +new Date(1633363848817),
+      timestamp: +new Date(1633444179421),
       // timestamp: +new Date(event) + 32400000,
     });
   };

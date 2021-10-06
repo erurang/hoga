@@ -1,4 +1,9 @@
 import React from "react";
+import styled from "styled-components";
+
+const Container = styled.div`
+  display: flex;
+`;
 
 const CoinTitle = ({
   prev_closing_price,
@@ -14,28 +19,34 @@ const CoinTitle = ({
     num = prev_closing_price + change_price[index];
   }
 
-  console.log("타이틀 호가 업데이트");
+  // console.log("타이틀 호가 업데이트");
 
   return (
-    <>
+    <Container>
       <h1>{coinName}</h1>
       <h1
-        style={num < prev_closing_price ? { color: "blue" } : { color: "red" }}
+        style={
+          (num < prev_closing_price
+            ? { color: "#0051C7" }
+            : { color: "#D60000" },
+          { fontSize: "32" })
+        }
       >
-        {num.toLocaleString()} KRW
+        {num.toLocaleString()}
       </h1>
+      <h1>KRW</h1>
       <h1
         style={
           change[index] === "FALL"
-            ? { color: "blue" }
+            ? { color: "#0051C7" }
             : change[index] === "EVEN"
             ? { color: "black" }
-            : { color: "red" }
+            : { color: "#D60000" }
         }
       >
         {change_price[index].toLocaleString()}
       </h1>
-    </>
+    </Container>
   );
 };
 

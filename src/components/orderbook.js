@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 const Container = styled.div`
   width: 490px;
-  height: 795px;
+  height: 520px;
   overflow: auto;
   border: 1px solid #f1f1f4;
   text-align: center;
@@ -14,24 +14,23 @@ const PriceContainer = styled.div`
   display: flex;
   height: 45px;
   border-top: 1px solid #f1f1f4;
+  position: relative;
 `;
 
 const AskPrice = styled.div`
   text-align: right;
   width: 162px;
-  border-right: 1px solid #f1f1f4;
 `;
 
 const BidPrice = styled.div`
   text-align: left;
   width: 125px;
-  border-right: 1px solid #f1f1f4;
 `;
 
 const Price = styled.div`
   font-weight: 700;
-  width: 162px;
-  border-right: 1px solid #f1f1f4;
+  width: 200px;
+  position: relative;
 `;
 
 const OrderBookTitle = styled.span`
@@ -54,53 +53,56 @@ const OrderBook = ({
       {orderbook[index]
         .sort((a, b) => b.ask_price - a.ask_price)
         .map((n, i) => (
-          <PriceContainer
-            key={i}
-            style={{ backgroundColor: "rgba(0,98,223,.03)" }}
-          >
-            <AskPrice>{n.ask_size.toFixed(3)}</AskPrice>
+          <PriceContainer key={i}>
+            <AskPrice>
+              <div style={{ height: "15px" }}></div>
+              {n.ask_size.toFixed(3)}
+            </AskPrice>
             <Price
               style={
                 prev_closing_price < n.ask_price.toLocaleString()
-                  ? { color: "#d60000" }
-                  : { color: "#0051c7" }
+                  ? {
+                      color: "#d60000",
+                      backgroundColor: "rgba(0,98,223,.03)",
+                    }
+                  : { color: "#0051c7", backgroundColor: "rgba(0,98,223,.03)" }
               }
             >
               <div
                 style={
                   i === 4 && trade_price[index] === n.ask_price
                     ? {
-                        border: "3px solid black",
+                        border: "2px solid black",
                         boxSizing: "border-box",
+                        width: "100%",
                         height: "100%",
+                        position: "absolute",
                       }
                     : {}
                 }
-              >
-                {n.ask_price.toLocaleString()}{" "}
-                {(
-                  ((n.ask_price - prev_closing_price) / prev_closing_price) *
-                  100
-                ).toFixed(2)}
-                %
-              </div>
+              ></div>
+              <div style={{ height: "15px" }}></div>
+              {n.ask_price.toLocaleString()}{" "}
+              {(
+                ((n.ask_price - prev_closing_price) / prev_closing_price) *
+                100
+              ).toFixed(2)}
+              %
             </Price>
           </PriceContainer>
         ))}
       {orderbook[index]
         .sort((a, b) => a.ask_price - b.ask_price)
         .map((n, i) => (
-          <PriceContainer
-            key={i}
-            style={{ backgroundColor: "rgba(216,14,53,.04)" }}
-          >
+          <PriceContainer key={i}>
             <AskPrice></AskPrice>
             <Price
               style={
                 prev_closing_price < n.ask_price
-                  ? { color: "#d60000" }
+                  ? { color: "#d60000", backgroundColor: "rgba(216,14,53,.04)" }
                   : {
                       color: "#0051c7",
+                      backgroundColor: "rgba(216,14,53,.04)",
                     }
               }
             >
@@ -108,28 +110,42 @@ const OrderBook = ({
                 style={
                   i === 0 && trade_price[index] === n.bid_price
                     ? {
-                        border: "3px solid black",
+                        border: "2px solid black",
                         boxSizing: "border-box",
+                        width: "100%",
                         height: "100%",
+                        position: "absolute",
                       }
                     : {}
                 }
-              >
-                {n.bid_price.toLocaleString()}{" "}
-                {(
-                  ((n.bid_price - prev_closing_price) / prev_closing_price) *
-                  100
-                ).toFixed(2)}
-                %
-              </div>
+              ></div>
+              <div style={{ height: "15px" }}></div>
+              {n.bid_price.toLocaleString()}{" "}
+              {(
+                ((n.bid_price - prev_closing_price) / prev_closing_price) *
+                100
+              ).toFixed(2)}
+              %
             </Price>
-            <BidPrice>{n.bid_size.toFixed(3)}</BidPrice>
+            <BidPrice>
+              <div style={{ height: "15px" }}></div>
+              {n.bid_size.toFixed(3)}
+            </BidPrice>
           </PriceContainer>
         ))}
       <PriceContainer>
-        <AskPrice>{total_ask_size[index].toFixed(3)}</AskPrice>
-        <Price>수량 </Price>
-        <BidPrice>{total_bid_size[index].toFixed(3)}</BidPrice>
+        <AskPrice>
+          <div style={{ height: "15px" }}></div>
+          {total_ask_size[index].toFixed(3)}
+        </AskPrice>
+        <Price>
+          <div style={{ height: "15px" }}></div>
+          수량{" "}
+        </Price>
+        <BidPrice>
+          <div style={{ height: "15px" }}></div>
+          {total_bid_size[index].toFixed(3)}
+        </BidPrice>
       </PriceContainer>
     </Container>
   );

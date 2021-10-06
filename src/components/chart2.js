@@ -2,10 +2,24 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Timer from "./timer";
 import axios from "axios";
+import LightChart from "./lightChart";
+
+const Container = styled.div`
+  position: relative;
+  width: 500px;
+  border: 1px solid black;
+  background-color: #ffffff;
+`;
+
+const Test = styled.div`
+  display: flex;
+`;
 
 const Chart = ({ coin, date }) => {
   const [data, setData] = useState({
-    data: null,
+    hoga: {},
+    trade: {},
+    ticker: {},
     error: false,
     loading: true,
   });
@@ -24,11 +38,13 @@ const Chart = ({ coin, date }) => {
       // 일단은 그냥 가져오는걸로
       console.log("데이터 가져오는중...");
       const getData = await axios.get("http://localhost:4000/users/getData");
-      const orderbook = getData.data.orderbook;
-      const coinName = getData.data.coinName;
-      const timestamp = getData.data.timestamp;
-      const total_ask_size = getData.data.total_ask_size;
-      const total_bid_size = getData.data.total_bid_size;
+
+      const getHoga = getData.data.hoga;
+      const orderbook = getHoga.orderbook;
+      const coinName = getHoga.coinName;
+      const timestamp = getHoga.timestamp;
+      const total_ask_size = getHoga.total_ask_size;
+      const total_bid_size = getHoga.total_bid_size;
 
       const getTrade = getData.data.trade;
       const ask_bid = getTrade.ask_bid;
@@ -40,8 +56,7 @@ const Chart = ({ coin, date }) => {
       const trade_volume = getTrade.trade_volume;
 
       setData({
-        ...data,
-        data: {
+        hoga: {
           coinName,
           timestamp,
           orderbook,
@@ -71,28 +86,31 @@ const Chart = ({ coin, date }) => {
   else if (data.error) return <h1>데이터를 받아올수 없습니다.</h1>;
 
   return (
-    <>
-      <h1>
-        {coin},{date}
-      </h1>
-      <Timer
-        date={date}
-        // hoga
-        coinName={data.data.coinName}
-        orderbook={data.data.orderbook}
-        timestamp={data.data.timestamp}
-        total_ask_size={data.data.total_ask_size}
-        total_bid_size={data.data.total_bid_size}
-        // trade
-        ask_bid={data.trade.ask_bid}
-        change={data.trade.change}
-        change_price={data.trade.change_price}
-        prev_closing_price={data.trade.prev_closing_price}
-        trade_price={data.trade.trade_price}
-        trade_timestamp={data.trade.trade_timestamp}
-        trade_volume={data.trade.trade_volume}
-      />
-    </>
+    <Test>
+      <LightChart />
+      <Container>
+        <h1>
+          {coin},{date}
+        </h1>
+        <Timer
+          date={date}
+          // hoga
+          coinName={data.hoga.coinName}
+          orderbook={data.hoga.orderbook}
+          timestamp={data.hoga.timestamp}
+          total_ask_size={data.hoga.total_ask_size}
+          total_bid_size={data.hoga.total_bid_size}
+          // trade
+          ask_bid={data.trade.ask_bid}
+          change={data.trade.change}
+          change_price={data.trade.change_price}
+          prev_closing_price={data.trade.prev_closing_price}
+          trade_price={data.trade.trade_price}
+          trade_timestamp={data.trade.trade_timestamp}
+          trade_volume={data.trade.trade_volume}
+        />
+      </Container>
+    </Test>
   );
 };
 

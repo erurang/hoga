@@ -229,5 +229,21 @@ getData() {
 2. `timer` 컴포넌트에서 현재 `timestamp`와 `tradedata`를 `trade` 컴포넌트로 넘겨줌
 3. `trade` 컴포넌트에서 받은 데이터를 표시함
 
-기능구현완료
+기능구현완료 
+
+발견한 버그
+
+- [ ] trade는 hoga보다 훠어어얼씬 많은 체결데이터가 필요함. 안그러면 Trade 컴포넌트 오류뜸
+- [ ] 1/5/10/30 버튼을 눌렀을때 받아온 데이터에 timestamp.findIndex() === -1이면 데이터없음 팝업띄어야함
+
+1. A => B 컴포넌트 Props로 함수를 넘겨주면서 B컴포넌트에서 리렌더링 되지않도록 memo 적용, props로 넘기는 함수에 usecallback 적용
+	=> usecallback으로 내부에서 계산되는 모든 값들이 저장되어 사용안댐
+
+2. 체결데이터의 잦은렌더링으로 infinite loop 오류뜸
+
+## 10/6~
+
+1. lightning-chart 라이브러리를 사용하여 차트 그리기
+2. CSS 수정
+
 

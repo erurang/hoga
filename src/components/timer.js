@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import CoinTitle from "./coinTitle";
 import OrderBook from "./orderbook";
 import TimerButton from "./timerButton";
@@ -19,6 +19,7 @@ const Timer = ({
   trade_price,
   trade_timestamp,
   trade_volume,
+  // ticker
 }) => {
   const newDate = useMemo(() => new Date(date), [date]);
 
@@ -46,16 +47,16 @@ const Timer = ({
 
     let plusTime = 0;
 
-    if (number === 1) plusTime = 60000;
+    if (number === 1) plusTime = 10000;
     else if (number === 5) plusTime = 300000;
     else if (number === 10) plusTime = 600000;
     else if (number === 30) plusTime = 1800000;
 
     const newDate = new Date(time.timestamp + plusTime);
 
-    // 이거 수정해야함.
+    // 이거 수정해야함. => plusTIme을 한번더한 실수 수정
     const update = timestamp.findIndex((t) => {
-      return t >= +newDate + plusTime;
+      return t >= +newDate;
     });
 
     if (update !== -1) {
@@ -68,7 +69,7 @@ const Timer = ({
       });
       setIndex(update);
     } else {
-      // ~시각 데이터가 존재하지않습니다 팝업뛰우던지 어떨지는 선택으로냅둠
+      // 1. 범위 9시~담날 9시 timestamp로 확인후 없으면 팝업후 리턴 만들기
     }
   }
 
@@ -126,11 +127,12 @@ const Timer = ({
   //   timestamp[index]
   // );
 
+  function test() {
+    setIsPlay((prev) => !prev);
+  }
+
   return (
     <>
-      <h1>
-        {time.hours}:{time.minutes}:{time.seconds}:{time.milliseconds}
-      </h1>
       <CoinTitle
         prev_closing_price={prev_closing_price}
         change={change}
@@ -138,7 +140,13 @@ const Timer = ({
         coinName={coinName}
         index={index}
       />
-      <button onClick={() => setIsPlay((prev) => !prev)}>play</button>
+      <h1>
+        {time.hours < 10 ? `0${time.hours}` : time.hours}:
+        {time.minutes < 10 ? `0${time.minutes}` : time.minutes}:
+        {time.seconds < 10 ? `0${time.seconds}` : time.seconds}:
+        {time.milliseconds < 10 ? `0${time.milliseconds}` : time.milliseconds}
+      </h1>
+      <button onClick={() => test()}>play</button>
       <TimerButton number={1} handlePlusTimerButton={handlePlusTimerButton} />
       <TimerButton number={5} handlePlusTimerButton={handlePlusTimerButton} />
       <TimerButton number={10} handlePlusTimerButton={handlePlusTimerButton} />

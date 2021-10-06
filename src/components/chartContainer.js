@@ -3,12 +3,6 @@ import styled from "styled-components";
 import { SelectContext } from "../context/exchange/exchange";
 import Chart from "./chart2";
 
-const Container = styled.div`
-  border: 1px solid;
-  width: 500px;
-  height: 500px;
-`;
-
 const ChartContainer = () => {
   const { state, dispatch } = useContext(SelectContext);
 

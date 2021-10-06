@@ -1,5 +1,22 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+
+const Li = styled.li`
+  font-size: 11px;
+  letter-spacing: 1px;
+`;
+
+const Ul = styled.ul`
+  position: absolute;
+  bottom: 65px;
+  left: 10px;
+`;
+
+const Div = styled.div`
+  display: flex;
+  justify-content: space-around;
+  height: 30px;
+`;
 
 const Trade = ({
   ask_bid,
@@ -8,53 +25,87 @@ const Trade = ({
   trade_volume,
   timestamp,
 }) => {
-  //   console.log(trade_timestamp);
-  const [index, setIndex] = useState(0);
+  // const [index, setIndex] = useState(0);
 
-  const [tradeArray, setTradeArray] = useState([]);
+  // const [tradeArray, setTradeArray] = useState([]);
 
-  if (timestamp >= trade_timestamp[index]) {
-    console.log("체결내역 업데이트");
+  // useEffect(() => {
+  //   const update = trade_timestamp.findIndex((t) => {
+  //     return t >= timestamp;
+  //   });
+  //   console.log(index, update);
+  //   setIndex(update);
 
-    setIndex((prev) => prev + 1);
+  //   if (tradeArray.length <= 10) {
+  //     setTradeArray(
+  //       tradeArray.concat([
+  //         [
+  //           trade_price[update].toLocaleString(),
+  //           trade_volume[update].toFixed(3),
+  //           ask_bid[update],
+  //         ],
+  //       ])
+  //     );
+  //   } else {
+  //     tradeArray.shift();
+  //     const newArray = tradeArray;
+  //     newArray.shift();
+  //     setTradeArray(newArray);
+  //   }
 
-    if (tradeArray.length < 10) {
-      const newArray = tradeArray;
-      newArray.push([
-        trade_price[index].toLocaleString(),
-        trade_volume[index].toFixed(3),
-        ask_bid[index],
-      ]);
-      setTradeArray(newArray);
-    } else {
-      const newArray = tradeArray;
+  //   // setTradeArray([
+  //   //   [
+  //   //     trade_price[index].toLocaleString(),
+  //   //     trade_volume[index].toFixed(3),
+  //   //     ask_bid[index],
+  //   //   ],
+  //   // ]);
+  // }, [timestamp]);
 
-      while (true) {
-        if (newArray.length >= 19) newArray.shift();
-        else break;
-      }
+  // console.log(index, tradeArray);
 
-      newArray.push([
-        trade_price[index].toLocaleString(),
-        trade_volume[index].toFixed(3),
-        ask_bid[index],
-      ]);
-      setTradeArray(newArray);
-    }
-  }
+  // 우리는 timestamp가 변경될때 최적의 index위치로 찾아가야해.
+
+  // if (tradeArray.length >= 10) {
+  //   console.log(tradeArray.length);
+  //   const newArray = tradeArray;
+  //   newArray.shift();
+
+  //   newArray.push([
+  //     trade_price[index].toLocaleString(),
+  //     trade_volume[index].toFixed(3),
+  //     ask_bid[index],
+  //   ]);
+  //   setTradeArray(newArray);
+  //   setIndex((prev) => prev + 1);
+  // } else {
+  //   const newArray = tradeArray;
+  //   // 여기서 array를 하나하나채우는 방식이된다면 엄청난 무한루프 오류뜸
+  //   newArray.push([
+  //     trade_price[index].toLocaleString(),
+  //     trade_volume[index].toFixed(3),
+  //     ask_bid[index],
+  //   ]);
+  //   setTradeArray(newArray);
+  // }
 
   return (
     <>
-      <ul>
-        {tradeArray?.reverse().map((n, i) => (
-          <li
+      <Ul>
+        <Div>
+          <span>체결가</span>
+          <span>체결량</span>
+        </Div>
+        {/* {tradeArray.map((n, i) => (
+          <Li
             key={i}
             style={n[2] === "BID" ? { color: "#d60000" } : { color: "#0051c7" }}
           >
-            체결가 : {n[0]} 체결량 :{n[1]}
-          </li>
-        ))}
-      </ul>
+            <span style={{ color: "#595959" }}>{n[0]}</span>{" "}
+            <span style={{ textAlign: "right" }}>{n[1]}</span>
+          </Li>
+        ))} */}
+      </Ul>
     </>
   );
 };
