@@ -6,6 +6,10 @@ function reducer(state, action) {
       return { ...state };
     case actionType.SELECT_DAY:
       return { ...state, date: action.timestamp };
+
+    case actionType.ERROR_POPUP:
+      return { ...state, error: true };
+
     default:
       throw new Error("잘못된 액션타입");
   }

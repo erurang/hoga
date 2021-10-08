@@ -203,21 +203,27 @@ db에서 조건문으로 해당시간 되면 호가창변화하게 => 이건 얘
 ```
 getData() {
     return {
-      // data : {} 얘도 고쳐놀예정
-      coinName: Object.values(coin.code)[0],
-      orderbook: Object.values(coin.orderbook_units).slice(0, 500),
-      timestamp: Object.values(coin.timestamp).slice(0, 500),
-      total_ask_size: Object.values(coin.total_ask_size).slice(0, 500),
-      total_bid_size: Object.values(coin.total_bid_size).slice(0, 500),
+      hoga: {
+        coinName: Object.values(axs_hoga.code)[0],
+        orderbook: Object.values(axs_hoga.orderbook_units),
+        timestamp: Object.values(axs_hoga.timestamp),
+        total_ask_size: Object.values(axs_hoga.total_ask_size),
+        total_bid_size: Object.values(axs_hoga.total_bid_size),
+      },
       trade: {
-        prev_closing_price: Object.values(trade.prev_closing_price)[0],
+        prev_closing_price: Object.values(axs_trade.prev_closing_price)[0],
         // trade timestamp랑 timestamp랑 뭔차인지모르겟다
-        timestamp: Object.values(trade.timestamp),
-        change: Object.values(trade.change).slice(0, 500),
-        change_price: Object.values(trade.change_price).slice(0, 500),
-        trade_price: Object.values(trade.trade_price).slice(0, 500),
-        trade_volume: Object.values(trade.trade_volume).slice(0, 500),
-        ask_bid: Object.values(trade.ask_bid).slice(0, 500),
+        timestamp: Object.values(axs_trade.timestamp),
+        change: Object.values(axs_trade.change),
+        change_price: Object.values(axs_trade.change_price),
+        trade_price: Object.values(axs_trade.trade_price),
+        trade_volume: Object.values(axs_trade.trade_volume),
+        ask_bid: Object.values(axs_trade.ask_bid),
+      },
+      ticker: {
+        timestamp: Object.values(axs_ticker.timestamp),
+        trade_price: Object.values(axs_ticker.trade_price),
+        trade_volume: Object.values(axs_ticker.trade_volume),
       },
     };
   }
@@ -231,19 +237,20 @@ getData() {
 
 기능구현완료 
 
-발견한 버그
+오류 내역
 
-- [ ] trade는 hoga보다 훠어어얼씬 많은 체결데이터가 필요함. 안그러면 Trade 컴포넌트 오류뜸
-- [ ] 1/5/10/30 버튼을 눌렀을때 받아온 데이터에 timestamp.findIndex() === -1이면 데이터없음 팝업띄어야함
+- [x] trade는 hoga보다 훠어어얼씬 많은 체결데이터가 필요함. 안그러면 Trade 컴포넌트 오류뜸 => 수정
 
-1. A => B 컴포넌트 Props로 함수를 넘겨주면서 B컴포넌트에서 리렌더링 되지않도록 memo 적용, props로 넘기는 함수에 usecallback 적용
-	=> usecallback으로 내부에서 계산되는 모든 값들이 저장되어 사용안댐
+## 10/6~8
 
-2. 체결데이터의 잦은렌더링으로 infinite loop 오류뜸
+- [x] lightning-chart 라이브러리를 사용하여 차트 그리기
+- [x] tiemstamp가 trade,ticker,hoga 인덱스의 최대 timestamp를 넘어가면 오류띄우기
+- [x] 체결의 timestamp와 chart의 timestamp를 맞추기위해 trade timestamp를 trade_timestmp로 변경
+- [x] chart histogram volume 중복된 index의 거래량을 계속 더하는 버그 수정하기
+- [x] 1/5/10/30 버튼을 눌렀을때 받아온 데이터에 timestamp.findIndex() === -1이면 데이터없음 팝업띄어야함
 
-## 10/6~
-
-1. lightning-chart 라이브러리를 사용하여 차트 그리기
-2. CSS 수정
-
+## 10/9
+- [ ] 분봉을 눌렀을때 chart와 volume 캔들 업데이트
+- [ ] 10분정도의 데이터를 받고난뒤 1분봉 3분봉 5분봉 10분봉 구현
+- [ ] 전체적인 CSS 수정
 

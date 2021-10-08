@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Timer from "./timer";
 import axios from "axios";
-import LightChart from "./lightChart";
 
 const Container = styled.div`
   position: relative;
@@ -55,6 +54,11 @@ const Chart = ({ coin, date }) => {
       const trade_timestamp = getTrade.timestamp;
       const trade_volume = getTrade.trade_volume;
 
+      const getTicker = getData.data.ticker;
+      const tic_trade_price = getTicker.trade_price;
+      const tic_trade_timestamp = getTicker.timestamp;
+      const tic_trade_volume = getTicker.trade_volume;
+
       setData({
         hoga: {
           coinName,
@@ -72,6 +76,11 @@ const Chart = ({ coin, date }) => {
           trade_timestamp,
           trade_volume,
         },
+        ticker: {
+          tic_trade_price,
+          tic_trade_timestamp,
+          tic_trade_volume,
+        },
         loading: false,
       });
     } catch (e) {
@@ -87,7 +96,6 @@ const Chart = ({ coin, date }) => {
 
   return (
     <Test>
-      <LightChart />
       <Container>
         <h1>
           {coin},{date}
@@ -108,6 +116,10 @@ const Chart = ({ coin, date }) => {
           trade_price={data.trade.trade_price}
           trade_timestamp={data.trade.trade_timestamp}
           trade_volume={data.trade.trade_volume}
+          //ticker
+          tic_trade_price={data.ticker.tic_trade_price}
+          tic_trade_timestamp={data.ticker.tic_trade_timestamp}
+          tic_trade_volume={data.ticker.tic_trade_volume}
         />
       </Container>
     </Test>

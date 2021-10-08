@@ -15,10 +15,14 @@ const Calendar = () => {
 
     dispatch({
       type: actionType.SELECT_DAY,
-      timestamp: +new Date(1633444179421),
+      timestamp: +new Date(1633444115283),
       // timestamp: +new Date(event) + 32400000,
     });
   };
+
+  //1633444179421
+  //1633444115283
+  //1633444158705
 
   console.log("캘린더 리렌더링");
   return <ReactCalendar onChange={(e) => handleOnchange(e)} />;

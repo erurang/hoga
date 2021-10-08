@@ -1,8 +1,27 @@
-import Chart from "kaktana-react-lightweight-charts";
-import { useState } from "react";
+import Chart, { CrosshairMode } from "kaktana-react-lightweight-charts";
+import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
-const LightChart = () => {
+const LightChart = ({
+  timerTimestamp,
+  tic_trade_price,
+  tic_trade_timestamp,
+  timestamp,
+  tic_trade_volume,
+}) => {
+  // const tradeIndex = tic_trade_timestamp.findIndex((n) => timestamp <= n);
+  // console.log("test :", tradeIndex);
+
+  // console.log("chart업데이트");
+  const [tradeIndex, setTradeIndex] = useState(
+    tic_trade_timestamp.findIndex((n) => timestamp <= n)
+  );
+
+  const [hours, setHours] = useState(new Date(timerTimestamp).getHours());
+  const [minutes, setMinutes] = useState(new Date(timerTimestamp).getMinutes());
+
+  const [close, setClose] = useState(tic_trade_price[0]);
+
   const [chart, setChart] = useState({
     options: {
       alignLabels: true,
@@ -11,115 +30,160 @@ const LightChart = () => {
         barSpacing: 3,
         fixLeftEdge: true,
         lockVisibleTimeRangeOnResize: true,
-        rightBarStaysOnScroll: true,
+        rightBarStaysOnScroll: false,
         borderVisible: false,
         borderColor: "#fff000",
         visible: true,
         timeVisible: true,
-        secondsVisible: false,
+        secondsVisible: true,
       },
+    },
+    rightPriceScale: {
+      scaleMargins: {
+        top: 0.3,
+        bottom: 0.25,
+      },
+      borderVisible: false,
+    },
+    grid: {
+      vertLines: {
+        color: "rgba(42, 46, 57, 0)",
+      },
+      horzLines: {
+        color: "rgba(42, 46, 57, 0.6)",
+      },
+    },
+    layout: {
+      backgroundColor: "#131722",
+      textColor: "#d1d4dc",
     },
     candlestickSeries: [
       {
-        // time을 타임스탬프로 잡고
-        // 적용하면되것네
         data: [
           {
-            time: "1",
-            open: 180.34,
-            high: 180.99,
-            low: 178.57,
-            close: 179.85,
+            time: tic_trade_timestamp[0],
+            open: tic_trade_price[0],
+            high: tic_trade_price[0],
+            low: tic_trade_price[0],
+            close: tic_trade_price[0],
           },
+        ],
+      },
+    ],
+    histogramSeries: [
+      {
+        data: [
           {
-            time: "2",
-            open: 180.82,
-            high: 181.4,
-            low: 177.56,
-            close: 178.75,
+            time: tic_trade_timestamp[0],
+            value: 0,
+            color: close < tic_trade_price[tradeIndex] ? "blue" : "red",
           },
-          {
-            time: "3",
-            open: 175.77,
-            high: 179.49,
-            low: 175.44,
-            close: 178.53,
-          },
-          {
-            time: "4",
-            open: 178.58,
-            high: 182.37,
-            low: 176.31,
-            close: 176.97,
-          },
-          {
-            time: "5",
-            open: 177.52,
-            high: 180.5,
-            low: 176.83,
-            close: 179.07,
-          },
-          {
-            time: "6",
-            open: 176.88,
-            high: 177.34,
-            low: 170.91,
-            close: 172.23,
-          },
-          //   {
-          //     time: "2018-10-29",
-          //     open: 173.74,
-          //     high: 175.99,
-          //     low: 170.95,
-          //     close: 173.2,
-          //   },
-          //   {
-          //     time: "2018-10-30",
-          //     open: 173.16,
-          //     high: 176.43,
-          //     low: 172.64,
-          //     close: 176.24,
-          //   },
-          //   {
-          //     time: "2018-10-31",
-          //     open: 177.98,
-          //     high: 178.85,
-          //     low: 175.59,
-          //     close: 175.88,
-          //   },
-          //   {
-          //     time: "2018-11-01",
-          //     open: 176.84,
-          //     high: 180.86,
-          //     low: 175.9,
-          //     close: 180.46,
-          //   },
-          //   {
-          //     time: "2018-11-02",
-          //     open: 182.47,
-          //     high: 183.01,
-          //     low: 177.39,
-          //     close: 179.93,
-          //   },
-          //   {
-          //     time: "2018-11-05",
-          //     open: 181.02,
-          //     high: 182.41,
-          //     low: 179.3,
-          //     close: 182.19,
-          //   },
         ],
       },
     ],
   });
 
+  useEffect(() => {
+    if (new Date(timerTimestamp).getMinutes() !== minutes) {
+      if (minutes + 1 === 60) {
+        setMinutes(0);
+        setHours((prev) => prev + 1);
+      } else {
+        setMinutes((prev) => prev + 1);
+      }
+
+      setClose(tic_trade_price[tradeIndex]);
+
+      setChart({
+        ...chart,
+        candlestickSeries: [
+          {
+            data: [
+              ...chart.candlestickSeries[0].data,
+              {
+                time: tic_trade_timestamp[tradeIndex],
+                open: tic_trade_price[tradeIndex],
+                close,
+                high: tic_trade_price[tradeIndex],
+                low: tic_trade_price[tradeIndex],
+              },
+            ],
+          },
+        ],
+        histogramSeries: [
+          {
+            data: [
+              ...chart.histogramSeries[0].data,
+              {
+                time: tic_trade_timestamp[tradeIndex],
+                value: 0,
+              },
+            ],
+          },
+        ],
+      });
+    } else {
+      // price candle
+      const price = chart.candlestickSeries[0].data.pop();
+      // 시가
+      price.close = close;
+
+      // 종가
+      price.open = tic_trade_price[tradeIndex];
+
+      // 고가
+      price.high =
+        price.high < tic_trade_price[tradeIndex]
+          ? tic_trade_price[tradeIndex]
+          : price.high;
+
+      // 저가
+      price.low =
+        price.low > tic_trade_price[tradeIndex]
+          ? tic_trade_price[tradeIndex]
+          : price.low;
+
+      // volume candle
+      const volume = chart.histogramSeries[0].data.pop();
+
+      if (timerTimestamp >= tic_trade_timestamp[tradeIndex]) {
+        volume.value += tic_trade_volume[tradeIndex];
+      }
+
+      setChart({
+        ...chart,
+        candlestickSeries: [
+          {
+            data: [...chart.candlestickSeries[0].data, price],
+          },
+        ],
+        histogramSeries: [
+          {
+            data: [...chart.histogramSeries[0].data, volume],
+          },
+        ],
+      });
+    }
+
+    if (timerTimestamp >= tic_trade_timestamp[tradeIndex]) {
+      setTradeIndex((prev) => prev + 1);
+    }
+  }, [timerTimestamp, timestamp]);
+
   return (
-    <Chart
-      options={chart}
-      candlestickSeries={chart.candlestickSeries}
-      width={500}
-      height={600}
-    />
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      <Chart
+        options={chart}
+        candlestickSeries={chart.candlestickSeries}
+        width={500}
+      />
+      <Chart
+        options={chart}
+        histogramSeries={chart.histogramSeries}
+        height={200}
+        width={500}
+      />
+    </div>
   );
 };
 

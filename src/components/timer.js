@@ -1,8 +1,12 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useContext } from "react";
 import CoinTitle from "./coinTitle";
 import OrderBook from "./orderbook";
 import TimerButton from "./timerButton";
 import Trade from "./trade";
+import LightChart from "./lightChart";
+import { SelectContext } from "../context/exchange/exchange";
+import actionType from "../context/exchange/action";
+import ErrorPopUP from "./error";
 
 const Timer = ({
   coinName,
@@ -20,6 +24,9 @@ const Timer = ({
   trade_timestamp,
   trade_volume,
   // ticker
+  tic_trade_price,
+  tic_trade_timestamp,
+  tic_trade_volume,
 }) => {
   const newDate = useMemo(() => new Date(date), [date]);
 
@@ -40,6 +47,12 @@ const Timer = ({
 
   const [isPlay, setIsPlay] = useState(false);
   const [index, setIndex] = useState(0);
+
+  const [tradeIndex, setTradeIndex] = useState(0);
+
+  const { state, dispatch } = useContext(SelectContext);
+
+  console.log("state", state);
 
   function handlePlusTimerButton(num) {
     setIsPlay(false);
@@ -70,11 +83,22 @@ const Timer = ({
       setIndex(update);
     } else {
       // 1. 범위 9시~담날 9시 timestamp로 확인후 없으면 팝업후 리턴 만들기
+      dispatch({ type: actionType.ERROR_POPUP });
     }
   }
 
   useEffect(() => {
     if (!isPlay) return;
+    else if (
+      trade_timestamp.length - 1 === tradeIndex ||
+      orderbook.length - 1 === index
+    ) {
+      console.log("길이넘음");
+      setIsPlay(false);
+      dispatch({ type: actionType.ERROR_POPUP });
+
+      return;
+    }
 
     const interval = setInterval(() => {
       setTime({
@@ -83,9 +107,6 @@ const Timer = ({
         timestamp: time.timestamp + 10,
       });
     }, 10);
-
-    // useState의 렌더링 순서가 어떻게 되는지 공부해볼것!!
-    // 페인팅부터 어떻게하는가에대해..
 
     if (time.milliseconds >= 99) {
       setTime({
@@ -112,7 +133,6 @@ const Timer = ({
     }
 
     // update orderbook
-
     if (time.timestamp >= timestamp[index]) {
       setIndex((prev) => prev + 1);
     }
@@ -120,19 +140,13 @@ const Timer = ({
     return () => clearInterval(interval);
   }, [isPlay, time]);
 
-  // console.log(
-  //   new Date(time.timestamp),
-  //   time.timestamp,
-  //   new Date(timestamp[index]),
-  //   timestamp[index]
-  // );
-
-  function test() {
-    setIsPlay((prev) => !prev);
-  }
-
   return (
     <>
+      {state?.error ? (
+        <ErrorPopUP message={"데이터가 존재하지 않습니다."} />
+      ) : (
+        <></>
+      )}
       <CoinTitle
         prev_closing_price={prev_closing_price}
         change={change}
@@ -140,32 +154,58 @@ const Timer = ({
         coinName={coinName}
         index={index}
       />
-      <h1>
-        {time.hours < 10 ? `0${time.hours}` : time.hours}:
-        {time.minutes < 10 ? `0${time.minutes}` : time.minutes}:
-        {time.seconds < 10 ? `0${time.seconds}` : time.seconds}:
-        {time.milliseconds < 10 ? `0${time.milliseconds}` : time.milliseconds}
-      </h1>
-      <button onClick={() => test()}>play</button>
-      <TimerButton number={1} handlePlusTimerButton={handlePlusTimerButton} />
-      <TimerButton number={5} handlePlusTimerButton={handlePlusTimerButton} />
-      <TimerButton number={10} handlePlusTimerButton={handlePlusTimerButton} />
-      <TimerButton number={30} handlePlusTimerButton={handlePlusTimerButton} />
       <div style={{ display: "flex" }}>
-        <OrderBook
-          index={index}
-          orderbook={orderbook}
-          total_ask_size={total_ask_size}
-          total_bid_size={total_bid_size}
-          prev_closing_price={prev_closing_price}
-          trade_price={trade_price}
-        />
-        <Trade
-          ask_bid={ask_bid}
-          prev_closing_price={prev_closing_price}
-          trade_price={trade_price}
-          trade_timestamp={trade_timestamp}
-          trade_volume={trade_volume}
+        <div>
+          <OrderBook
+            index={index}
+            orderbook={orderbook}
+            total_ask_size={total_ask_size}
+            total_bid_size={total_bid_size}
+            prev_closing_price={prev_closing_price}
+            trade_price={trade_price}
+          />
+          <div>
+            {time.hours < 10 ? `0${time.hours}` : time.hours}:
+            {time.minutes < 10 ? `0${time.minutes}` : time.minutes}:
+            {time.seconds < 10 ? `0${time.seconds}` : time.seconds}:
+            {time.milliseconds < 10
+              ? `0${time.milliseconds}`
+              : time.milliseconds}
+            <button onClick={() => setIsPlay((prev) => !prev)}>play</button>
+            <TimerButton
+              number={1}
+              handlePlusTimerButton={handlePlusTimerButton}
+            />
+            <TimerButton
+              number={5}
+              handlePlusTimerButton={handlePlusTimerButton}
+            />
+            <TimerButton
+              number={10}
+              handlePlusTimerButton={handlePlusTimerButton}
+            />
+            <TimerButton
+              number={30}
+              handlePlusTimerButton={handlePlusTimerButton}
+            />
+          </div>
+          <Trade
+            ask_bid={ask_bid}
+            prev_closing_price={prev_closing_price}
+            trade_price={trade_price}
+            trade_timestamp={trade_timestamp}
+            trade_volume={trade_volume}
+            timestamp={time.timestamp}
+            isPlay={isPlay}
+            tradeIndex={tradeIndex}
+            setTradeIndex={setTradeIndex}
+          />
+        </div>
+        <LightChart
+          timerTimestamp={time.timestamp}
+          tic_trade_price={tic_trade_price}
+          tic_trade_timestamp={tic_trade_timestamp}
+          tic_trade_volume={tic_trade_volume}
           timestamp={time.timestamp}
         />
       </div>

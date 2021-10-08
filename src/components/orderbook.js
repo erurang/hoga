@@ -47,6 +47,7 @@ const OrderBook = ({
   trade_price,
 }) => {
   console.log("오더북 업데이트");
+
   return (
     <Container>
       <h1>{index}</h1>

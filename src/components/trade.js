@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import styled from "styled-components";
 
 const Li = styled.li`
@@ -8,8 +8,11 @@ const Li = styled.li`
 
 const Ul = styled.ul`
   position: absolute;
-  bottom: 65px;
+  top: 300px;
   left: 10px;
+  width: 150px;
+  height: 200px;
+  overflow: hidden;
 `;
 
 const Div = styled.div`
@@ -24,70 +27,52 @@ const Trade = ({
   trade_timestamp,
   trade_volume,
   timestamp,
+  isPlay,
+  tradeIndex,
+  setTradeIndex,
 }) => {
-  // const [index, setIndex] = useState(0);
+  const [tradeArray, setTradeArray] = useState([]);
+  // console.log("컴포넌트 렌더링됨!");
+  // console.log("tradeArray :", tradeArray);
 
-  // const [tradeArray, setTradeArray] = useState([]);
+  useEffect(() => {
+    if (!isPlay) {
+      const update = trade_timestamp.findIndex((t) => {
+        return t >= timestamp;
+      });
 
-  // useEffect(() => {
-  //   const update = trade_timestamp.findIndex((t) => {
-  //     return t >= timestamp;
-  //   });
-  //   console.log(index, update);
-  //   setIndex(update);
-
-  //   if (tradeArray.length <= 10) {
-  //     setTradeArray(
-  //       tradeArray.concat([
-  //         [
-  //           trade_price[update].toLocaleString(),
-  //           trade_volume[update].toFixed(3),
-  //           ask_bid[update],
-  //         ],
-  //       ])
-  //     );
-  //   } else {
-  //     tradeArray.shift();
-  //     const newArray = tradeArray;
-  //     newArray.shift();
-  //     setTradeArray(newArray);
-  //   }
-
-  //   // setTradeArray([
-  //   //   [
-  //   //     trade_price[index].toLocaleString(),
-  //   //     trade_volume[index].toFixed(3),
-  //   //     ask_bid[index],
-  //   //   ],
-  //   // ]);
-  // }, [timestamp]);
-
-  // console.log(index, tradeArray);
-
-  // 우리는 timestamp가 변경될때 최적의 index위치로 찾아가야해.
-
-  // if (tradeArray.length >= 10) {
-  //   console.log(tradeArray.length);
-  //   const newArray = tradeArray;
-  //   newArray.shift();
-
-  //   newArray.push([
-  //     trade_price[index].toLocaleString(),
-  //     trade_volume[index].toFixed(3),
-  //     ask_bid[index],
-  //   ]);
-  //   setTradeArray(newArray);
-  //   setIndex((prev) => prev + 1);
-  // } else {
-  //   const newArray = tradeArray;
-  //   // 여기서 array를 하나하나채우는 방식이된다면 엄청난 무한루프 오류뜸
-  //   newArray.push([
-  //     trade_price[index].toLocaleString(),
-  //     trade_volume[index].toFixed(3),
-  //     ask_bid[index],
-  //   ]);
-  //   setTradeArray(newArray);
-  // }
+      setTradeArray(
+        tradeArray.concat([
+          [
+            trade_price[update].toLocaleString(),
+            trade_volume[update].toFixed(3),
+            ask_bid[update],
+          ],
+        ])
+      );
+      // console.log("1번 실행됨!");
+      setTradeIndex(update);
+    } else {
+      if (tradeArray.length > 9) {
+        const newArray = tradeArray;
+        newArray.shift();
+        // console.log("2번 실행됨!");
+        setTradeArray(newArray);
+      } else {
+        if (timestamp >= trade_timestamp[tradeIndex]) {
+          const newArray = tradeArray;
+          newArray.push([
+            trade_price[tradeIndex].toLocaleString(),
+            trade_volume[tradeIndex].toFixed(3),
+            ask_bid[tradeIndex],
+          ]);
+          // console.log("3번 실행됨!");
+          setTradeArray(newArray);
+          setTradeIndex((prev) => prev + 1);
+        }
+      }
+    }
+  }, [timestamp]);
 
   return (
     <>
@@ -96,7 +81,7 @@ const Trade = ({
           <span>체결가</span>
           <span>체결량</span>
         </Div>
-        {/* {tradeArray.map((n, i) => (
+        {tradeArray.map((n, i) => (
           <Li
             key={i}
             style={n[2] === "BID" ? { color: "#d60000" } : { color: "#0051c7" }}
@@ -104,10 +89,10 @@ const Trade = ({
             <span style={{ color: "#595959" }}>{n[0]}</span>{" "}
             <span style={{ textAlign: "right" }}>{n[1]}</span>
           </Li>
-        ))} */}
+        ))}
       </Ul>
     </>
   );
 };
 
-export default Trade;
+export default React.memo(Trade);

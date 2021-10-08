@@ -16,6 +16,7 @@ import reducer from "./reducer";
 const select = {
   date: null,
   coin: "null",
+  error: false,
 };
 
 export const SelectContext = createContext(select);
