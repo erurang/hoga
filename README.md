@@ -66,7 +66,7 @@ db에서 조건문으로 해당시간 되면 호가창변화하게 => 이건 얘
 가져온 데이터를 화면에 표시
 재생(시작)버튼을 누르면 호가창이 1초(… 이건 db에서 정해주는대로 만들기) 마다 갱신됨
 
-상태관리는 일단 context API 사용, 필요한 상태 리스트
+필요한 상태 리스트
 
 1.	날짜 선택하였나?
 2.	코인을 선택하였나?
@@ -250,7 +250,64 @@ getData() {
 - [x] 1/5/10/30 버튼을 눌렀을때 받아온 데이터에 timestamp.findIndex() === -1이면 데이터없음 팝업띄어야함
 
 ## 10/9
+- [ ] Code Refactor
 - [ ] 분봉을 눌렀을때 chart와 volume 캔들 업데이트
 - [ ] 10분정도의 데이터를 받고난뒤 1분봉 3분봉 5분봉 10분봉 구현
 - [ ] 전체적인 CSS 수정
+
+### Code Refactor
+
+어느정도 기능을 구현한후에 나는 내 코드가 매우 난잡하다는 생각이들었다. 특히 상태관리와 Props를 Props.. 하는 이 사태가 너무 맘에들지않았다.
+
+그리고 이것을 해결하기위해선 전역 상태 라이브러리 Redux와 리액트에서 제공하는 React를 사용하는 방법밖엔 없었다.
+
+README.md의 10/2~4일 개발 기록 글중 이런 나는 문장을 썻다
+
+```
+가장 큰 원인은 5번이다. 타이머가 실행되면 0.01초마다 모든 컴포넌트의 렌더링이 일어난다.
+즉 나는 상태를 좀더 세부적으로 나눌 필요성이 생겼다.
+```
+
+이때 나는 Context에 대한 사용법도 전무한 상태였고, 어떻게 렌더링이 일어나는지 제대로 이해를 하지못하였다.
+
+다시 코드를 뒤엎으려한다. 올바른 Context 사용으로.
+
+현재의 Context API의 상태관리는 select와 timer 2개만 관리하고있다.
+
+```
+const select = {
+  date: null,
+  coin: "null",
+  error: false,
+};
+
+const timer = {
+  timestamp: 0,
+  isPlay: false,
+};
+```
+
+컴포넌트 구상도는 아래 그림처럼 되어있다.
+
+<img width="871" alt="스크린샷 2021-10-09 오전 3 49 11" src="https://user-images.githubusercontent.com/56789064/136610720-00b5ac50-2016-41ec-8192-9db51690b754.png">
+
+처음에는 Context에 timer timestamp를 상태에 같이넣어두어서 context를 사용하는 모든 컴포넌트에서 0.01초마다 렌더링이 일어났다.
+
+이젠 timer 하나의 컴포넌트에서 상태를 가지고, 나머지 공통되는 데이터,플레이상태,날짜,코인선택여부 정도를 전역으로 관리한다면 이 데이터들은 
+
+다시 설정하지않는이상 바뀔일이 없기떄문에 컴포넌트에서 렌더링이 한번만 일어날것이다.
+
+그래서 상태를 이렇게 관리하는것이 좋을거같다.
+
+Context
+- getData selectDate selectCoin isPlay error(messege)
+
+Timer 컴포넌트
+- hours,minutes,seconds,milliseconds,timestamp
+- index(timer timestamp와 data timestamp)
+
+Trade 컴포넌트
+- tradeIndex
+
+- [ ] api로 받아온 getData의 정보를 전역으로 돌려서 props를 없앤다.
 
