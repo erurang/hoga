@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
+import { BaseContext } from "../context/exchange/exchange";
 
 const Container = styled.div`
   width: 490px;
@@ -38,15 +39,15 @@ const OrderBookTitle = styled.span`
   font-size: 16px;
 `;
 
-const OrderBook = ({
-  index,
-  orderbook,
-  total_ask_size,
-  total_bid_size,
-  prev_closing_price,
-  trade_price,
-}) => {
+const OrderBook = ({ index }) => {
   console.log("오더북 업데이트");
+
+  const { state, dispatch } = useContext(BaseContext);
+
+  const {
+    hoga: { orderbook, total_ask_size, total_bid_size },
+    trade: { prev_closing_price, trade_price },
+  } = state;
 
   return (
     <Container>

@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import Timer from "./timer";
 import axios from "axios";
+import { BaseContext } from "../context/exchange/exchange";
+import actionType from "../context/exchange/action";
 
 const Container = styled.div`
   position: relative;
@@ -10,18 +12,8 @@ const Container = styled.div`
   background-color: #ffffff;
 `;
 
-const Test = styled.div`
-  display: flex;
-`;
-
-const Chart = ({ coin, date }) => {
-  const [data, setData] = useState({
-    hoga: {},
-    trade: {},
-    ticker: {},
-    error: false,
-    loading: true,
-  });
+const Chart = () => {
+  const { state, dispatch } = useContext(BaseContext);
 
   // 여기서 타이머를 쓰는게아니라..
   // 전역으로 돌려서 위에서 사용하게끔 만들면..
@@ -59,7 +51,7 @@ const Chart = ({ coin, date }) => {
       const tic_trade_timestamp = getTicker.timestamp;
       const tic_trade_volume = getTicker.trade_volume;
 
-      setData({
+      const data = {
         hoga: {
           coinName,
           timestamp,
@@ -82,47 +74,26 @@ const Chart = ({ coin, date }) => {
           tic_trade_volume,
         },
         loading: false,
-      });
+      };
+
+      dispatch({ type: actionType.SET_DATA, data });
     } catch (e) {
       console.log("데이터 가져오기 오류!", e);
-      setData({ ...data, error: true, loading: false });
+      dispatch({ type: actionType.ERROR_POPUP });
     }
   }, []);
 
-  console.log("컴포넌트 마운트됨", data);
+  console.log("컴포넌트 마운트됨", state);
 
-  if (data.loading) return <h1>로딩중입니다..</h1>;
-  else if (data.error) return <h1>데이터를 받아올수 없습니다.</h1>;
+  if (state.loading) {
+    console.log("로딩중ㅇㅇ");
+    return <h1>로딩중입니다..</h1>;
+  } else if (state.error) return <h1>데이터를 받아올수 없습니다.</h1>;
 
   return (
-    <Test>
-      <Container>
-        <h1>
-          {coin},{date}
-        </h1>
-        <Timer
-          date={date}
-          // hoga
-          coinName={data.hoga.coinName}
-          orderbook={data.hoga.orderbook}
-          timestamp={data.hoga.timestamp}
-          total_ask_size={data.hoga.total_ask_size}
-          total_bid_size={data.hoga.total_bid_size}
-          // trade
-          ask_bid={data.trade.ask_bid}
-          change={data.trade.change}
-          change_price={data.trade.change_price}
-          prev_closing_price={data.trade.prev_closing_price}
-          trade_price={data.trade.trade_price}
-          trade_timestamp={data.trade.trade_timestamp}
-          trade_volume={data.trade.trade_volume}
-          //ticker
-          tic_trade_price={data.ticker.tic_trade_price}
-          tic_trade_timestamp={data.ticker.tic_trade_timestamp}
-          tic_trade_volume={data.ticker.tic_trade_volume}
-        />
-      </Container>
-    </Test>
+    <Container>
+      <Timer />
+    </Container>
   );
 };
 

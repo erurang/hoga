@@ -1,29 +1,38 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
+import { BaseContext } from "../context/exchange/exchange";
 
 const Container = styled.div`
   display: flex;
 `;
 
-const CoinTitle = ({
-  prev_closing_price,
-  change,
-  change_price,
-  coinName,
-  index,
-}) => {
+const CoinTitle = ({ index }) => {
+  const { state, dispatch } = useContext(BaseContext);
+
+  console.log("타이틀 호가 업데이트");
+  console.log(state);
+
+  const {
+    coin,
+    trade: { prev_closing_price, change, change_price },
+  } = state;
+
   let num = prev_closing_price;
+
+  console.log("===========");
+  console.log(num);
+  console.log(prev_closing_price);
+  console.log("===========");
+
   if (change[index] === "FALL") {
     num = prev_closing_price - change_price[index];
   } else {
     num = prev_closing_price + change_price[index];
   }
 
-  // console.log("타이틀 호가 업데이트");
-
   return (
     <Container>
-      <h1>{coinName}</h1>
+      <h1>{coin}</h1>
       <h1
         style={
           (num < prev_closing_price
@@ -32,7 +41,7 @@ const CoinTitle = ({
           { fontSize: "32" })
         }
       >
-        {num.toLocaleString()}
+        {num}
       </h1>
       <h1>KRW</h1>
       <h1
@@ -44,7 +53,7 @@ const CoinTitle = ({
             : { color: "#D60000" }
         }
       >
-        {change_price[index].toLocaleString()}
+        {change_price[index]}
       </h1>
     </Container>
   );

@@ -2,10 +2,17 @@ import actionType from "./action";
 
 function reducer(state, action) {
   switch (action.type) {
-    case actionType.TIMER_TIMESTAMP:
-      return { ...state };
     case actionType.SELECT_DAY:
       return { ...state, date: action.timestamp };
+
+    case actionType.SET_DATA:
+      return {
+        ...state,
+        loading: false,
+        hoga: { ...action.data.hoga },
+        trade: { ...action.data.trade },
+        ticker: { ...action.data.ticker },
+      };
 
     case actionType.ERROR_POPUP:
       return { ...state, error: true };

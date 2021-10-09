@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState, useEffect, useReducer, useContext } from "react";
 import styled from "styled-components";
+import { BaseContext } from "../context/exchange/exchange";
 
 const Li = styled.li`
   font-size: 11px;
@@ -21,19 +22,17 @@ const Div = styled.div`
   height: 30px;
 `;
 
-const Trade = ({
-  ask_bid,
-  trade_price,
-  trade_timestamp,
-  trade_volume,
-  timestamp,
-  isPlay,
-  tradeIndex,
-  setTradeIndex,
-}) => {
+const Trade = ({ timestamp, isPlay, tradeIndex, setTradeIndex }) => {
   const [tradeArray, setTradeArray] = useState([]);
-  // console.log("컴포넌트 렌더링됨!");
-  // console.log("tradeArray :", tradeArray);
+
+  // trade update
+  console.log("trade update");
+
+  const { state, dispath } = useContext(BaseContext);
+
+  const {
+    trade: { ask_bid, trade_price, trade_timestamp, trade_volume },
+  } = state;
 
   useEffect(() => {
     if (!isPlay) {
@@ -43,30 +42,26 @@ const Trade = ({
 
       setTradeArray(
         tradeArray.concat([
-          [
-            trade_price[update].toLocaleString(),
-            trade_volume[update].toFixed(3),
-            ask_bid[update],
-          ],
+          [trade_price[update], trade_volume[update], ask_bid[update]],
         ])
       );
-      // console.log("1번 실행됨!");
+
       setTradeIndex(update);
     } else {
       if (tradeArray.length > 9) {
         const newArray = tradeArray;
         newArray.shift();
-        // console.log("2번 실행됨!");
+
         setTradeArray(newArray);
       } else {
         if (timestamp >= trade_timestamp[tradeIndex]) {
           const newArray = tradeArray;
           newArray.push([
-            trade_price[tradeIndex].toLocaleString(),
-            trade_volume[tradeIndex].toFixed(3),
+            trade_price[tradeIndex],
+            trade_volume[tradeIndex],
             ask_bid[tradeIndex],
           ]);
-          // console.log("3번 실행됨!");
+
           setTradeArray(newArray);
           setTradeIndex((prev) => prev + 1);
         }
@@ -86,8 +81,8 @@ const Trade = ({
             key={i}
             style={n[2] === "BID" ? { color: "#d60000" } : { color: "#0051c7" }}
           >
-            <span style={{ color: "#595959" }}>{n[0]}</span>{" "}
-            <span style={{ textAlign: "right" }}>{n[1]}</span>
+            <span style={{ color: "#595959" }}>{n[0].toLocaleString()}</span>{" "}
+            <span style={{ textAlign: "right" }}>{n[1].toFixed(3)}</span>
           </Li>
         ))}
       </Ul>

@@ -22,12 +22,12 @@ npm i react-helmet-async
 
 ## 사용될 예상 라우터
 
-1. 메인 페이지
-2. 거래소 페이지
-3. 내 보유 코인 페이지
-4. 회원가입 페이지
-5. 입출금 페이지 ( 호가플레이에선 포인트였음 )
-6. 고객센터 페이지
+- [x] 메인 페이지
+- [x] 거래소 페이지
+- [ ] 내 보유 코인 페이지
+- [ ] 회원가입 페이지
+- [ ] 입출금 페이지 ( 호가플레이에선 포인트였음 )
+- [ ] 고객센터 페이지
 
 일단 저 정도 페이지가 기본적으로 사용될것으로 추정
 
@@ -250,7 +250,8 @@ getData() {
 - [x] 1/5/10/30 버튼을 눌렀을때 받아온 데이터에 timestamp.findIndex() === -1이면 데이터없음 팝업띄어야함
 
 ## 10/9
-- [ ] Code Refactor
+- [x] Code Refactor
+- [x] api로 받아온 getData의 정보를 전역으로 돌려서 props를 없앤다.
 - [ ] 분봉을 눌렀을때 chart와 volume 캔들 업데이트
 - [ ] 10분정도의 데이터를 받고난뒤 1분봉 3분봉 5분봉 10분봉 구현
 - [ ] 전체적인 CSS 수정
@@ -259,7 +260,7 @@ getData() {
 
 어느정도 기능을 구현한후에 나는 내 코드가 매우 난잡하다는 생각이들었다. 특히 상태관리와 Props를 Props.. 하는 이 사태가 너무 맘에들지않았다.
 
-그리고 이것을 해결하기위해선 전역 상태 라이브러리 Redux와 리액트에서 제공하는 React를 사용하는 방법밖엔 없었다.
+그리고 이것을 해결하기위해선 전역 상태 라이브러리 Redux와 리액트에서 제공하는 ContextAPI를 사용하는 방법밖엔 없었다.
 
 README.md의 10/2~4일 개발 기록 글중 이런 나는 문장을 썻다
 
@@ -268,36 +269,17 @@ README.md의 10/2~4일 개발 기록 글중 이런 나는 문장을 썻다
 즉 나는 상태를 좀더 세부적으로 나눌 필요성이 생겼다.
 ```
 
-이때 나는 Context에 대한 사용법도 전무한 상태였고, 어떻게 렌더링이 일어나는지 제대로 이해를 하지못하였다.
-
-다시 코드를 뒤엎으려한다. 올바른 Context 사용으로.
-
-현재의 Context API의 상태관리는 select와 timer 2개만 관리하고있다.
-
-```
-const select = {
-  date: null,
-  coin: "null",
-  error: false,
-};
-
-const timer = {
-  timestamp: 0,
-  isPlay: false,
-};
-```
-
-컴포넌트 구상도는 아래 그림처럼 되어있다.
-
-<img width="871" alt="스크린샷 2021-10-09 오전 3 49 11" src="https://user-images.githubusercontent.com/56789064/136610720-00b5ac50-2016-41ec-8192-9db51690b754.png">
-
 처음에는 Context에 timer timestamp를 상태에 같이넣어두어서 context를 사용하는 모든 컴포넌트에서 0.01초마다 렌더링이 일어났다.
 
-이젠 timer 하나의 컴포넌트에서 상태를 가지고, 나머지 공통되는 데이터,플레이상태,날짜,코인선택여부 정도를 전역으로 관리한다면 이 데이터들은 
+모든 컴포넌트가 0.01초마다 timestamp의 변경으로 렌더링이 일어나는것을 막기위해
 
-다시 설정하지않는이상 바뀔일이 없기떄문에 컴포넌트에서 렌더링이 한번만 일어날것이다.
+timestamp를 한 컴포넌트에서 담당하여 필요한 컴포넌트에 Props를 해주는 방법으로
 
-그래서 상태를 이렇게 관리하는것이 좋을거같다.
+전체 컴포넌트의 렌더링 연산 횟수를 줄인다.
+
+즉 timer 하나의 컴포넌트에서 상태를 가지고, 나머지 공통되는 데이터들은
+
+날짜와 코인을 다시 설정하지않는이상 바뀔일이 없기떄문에 컴포넌트에서 렌더링이 한번만 일어날것이다.
 
 Context
 - getData selectDate selectCoin isPlay error(messege)
@@ -305,9 +287,41 @@ Context
 Timer 컴포넌트
 - hours,minutes,seconds,milliseconds,timestamp
 - index(timer timestamp와 data timestamp)
-
-Trade 컴포넌트
 - tradeIndex
 
-- [ ] api로 받아온 getData의 정보를 전역으로 돌려서 props를 없앤다.
+컴포넌트 구상과 상태관리는 아래 그림처럼 되어있다.
+
+<img width="871" alt="스크린샷 2021-10-09 오전 3 49 11" src="https://user-images.githubusercontent.com/56789064/136610720-00b5ac50-2016-41ec-8192-9db51690b754.png">
+
+각 컴포넌트에서 쓸떄없는 Prop와 중복되는 상태를 관리하는것을 볼수있다.
+
+그래서 이것을 전역으로 돌리기위한 Refactor 작업을 하려한다.
+
+- [x] Context를 아래처럼 변경함
+
+```
+const select = {
+  date: null,
+  coin: null,
+  error: false,
+};
+
+const timer = {
+  timestamp: 0,
+  isPlay: false,
+};
+
+//// ⬇ ////
+
+const base = {
+  date: null,
+  coin: null,
+  error: null,
+  loading: true,
+  hoga: {},
+  trade: {},
+  ticker: {},
+};
+```
+
 

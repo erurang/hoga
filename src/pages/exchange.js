@@ -8,8 +8,6 @@ const Exchange = () => {
       <Chart />
     </>
   );
-
-  //   return <h1>Exchange</h1>;
 };
 
 export default Exchange;

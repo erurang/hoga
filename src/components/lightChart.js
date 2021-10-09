@@ -1,20 +1,20 @@
 import Chart, { CrosshairMode } from "kaktana-react-lightweight-charts";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
+import { BaseContext } from "../context/exchange/exchange";
 
-const LightChart = ({
-  timerTimestamp,
-  tic_trade_price,
-  tic_trade_timestamp,
-  timestamp,
-  tic_trade_volume,
-}) => {
+const LightChart = ({ timerTimestamp }) => {
   // const tradeIndex = tic_trade_timestamp.findIndex((n) => timestamp <= n);
   // console.log("test :", tradeIndex);
 
+  const { state, dispatch } = useContext(BaseContext);
+
+  const {
+    ticker: { tic_trade_timestamp, tic_trade_price, tic_trade_volume },
+  } = state;
   // console.log("chart업데이트");
   const [tradeIndex, setTradeIndex] = useState(
-    tic_trade_timestamp.findIndex((n) => timestamp <= n)
+    tic_trade_timestamp.findIndex((n) => timerTimestamp <= n)
   );
 
   const [hours, setHours] = useState(new Date(timerTimestamp).getHours());
@@ -76,7 +76,7 @@ const LightChart = ({
           {
             time: tic_trade_timestamp[0],
             value: 0,
-            color: close < tic_trade_price[tradeIndex] ? "blue" : "red",
+            color: "red",
           },
         ],
       },
@@ -168,7 +168,7 @@ const LightChart = ({
     if (timerTimestamp >= tic_trade_timestamp[tradeIndex]) {
       setTradeIndex((prev) => prev + 1);
     }
-  }, [timerTimestamp, timestamp]);
+  }, [timerTimestamp]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>

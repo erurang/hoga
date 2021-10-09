@@ -4,7 +4,7 @@ import router from "./router";
 import Home from "./pages/home";
 import Exchange from "./pages/exchange";
 import GlobalStyles from "./styles/global";
-import { SelectStore, TimerStore } from "./context/exchange/exchange";
+import { BaseStore } from "./context/exchange/exchange";
 
 function App() {
   return (
@@ -15,11 +15,9 @@ function App() {
             <Home />
           </Route>
           <Route path={router.EXCHANGE}>
-            <SelectStore>
-              <TimerStore>
-                <Exchange />
-              </TimerStore>
-            </SelectStore>
+            <BaseStore>
+              <Exchange />
+            </BaseStore>
           </Route>
         </GlobalStyles>
       </Switch>

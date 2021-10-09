@@ -1,53 +1,27 @@
 import React, { createContext, useReducer } from "react";
 import reducer from "./reducer";
 
-// const initial = {
-//   toggleTimer: false,
-//   timerTimestamp: null,
-//   dayTimestamp: null,
-//   selectCoin: null,
-//   coinTimestamp: null,
-//   index: 0,
-//   data: null,
-// };
-
-// export const ExchangeContext = createContext();
-
-const select = {
+const base = {
   date: null,
-  coin: "null",
-  error: false,
+  coin: "AXS",
+  error: null,
+  loading: true,
+  hoga: {},
+  trade: {},
+  ticker: {},
 };
 
-export const SelectContext = createContext(select);
+export const BaseContext = createContext(base);
 
-const SelectStore = ({ children }) => {
-  const [state, dispatch] = useReducer(reducer, select);
+const BaseStore = ({ children }) => {
+  const [state, dispatch] = useReducer(reducer, base);
 
-  console.log("select store");
+  console.log("baseStore");
   return (
-    <SelectContext.Provider value={{ state, dispatch }}>
+    <BaseContext.Provider value={{ state, dispatch }}>
       {children}
-    </SelectContext.Provider>
+    </BaseContext.Provider>
   );
 };
 
-const timer = {
-  timestamp: 0,
-  isPlay: false,
-};
-
-export const TimerContext = createContext(timer);
-
-const TimerStore = ({ children }) => {
-  console.log("timer store");
-  const [state, dispatch] = useReducer(reducer, timer);
-
-  return (
-    <TimerContext.Provider value={{ state, dispatch }}>
-      {children}
-    </TimerContext.Provider>
-  );
-};
-
-export { SelectStore, TimerStore };
+export { BaseStore };
