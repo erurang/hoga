@@ -3,24 +3,28 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { BaseContext } from "../context/exchange/exchange";
 
-const LightChart = ({ timerTimestamp }) => {
-  // const tradeIndex = tic_trade_timestamp.findIndex((n) => timestamp <= n);
-  // console.log("test :", tradeIndex);
-
+const LightChart = ({ tickerIndex }) => {
   const { state, dispatch } = useContext(BaseContext);
+
+  // console.log("lightchart 업데이트");
 
   const {
     ticker: { tic_trade_timestamp, tic_trade_price, tic_trade_volume },
   } = state;
-  // console.log("chart업데이트");
-  const [tradeIndex, setTradeIndex] = useState(
-    tic_trade_timestamp.findIndex((n) => timerTimestamp <= n)
+
+  // const [tradeIndex, setTradeIndex] = useState(
+  //   tic_trade_timestamp.findIndex((n) => timerTimestamp <= n)
+  // );
+
+  const [hours, setHours] = useState(
+    new Date(tic_trade_timestamp[tickerIndex]).getHours()
   );
-
-  const [hours, setHours] = useState(new Date(timerTimestamp).getHours());
-  const [minutes, setMinutes] = useState(new Date(timerTimestamp).getMinutes());
-
+  const [minutes, setMinutes] = useState(
+    new Date(tic_trade_timestamp[tickerIndex]).getMinutes()
+  );
   const [close, setClose] = useState(tic_trade_price[0]);
+
+  // const [] = useState(1);
 
   const [chart, setChart] = useState({
     options: {
@@ -84,7 +88,7 @@ const LightChart = ({ timerTimestamp }) => {
   });
 
   useEffect(() => {
-    if (new Date(timerTimestamp).getMinutes() !== minutes) {
+    if (new Date(tic_trade_timestamp[tickerIndex]).getMinutes() !== minutes) {
       if (minutes + 1 === 60) {
         setMinutes(0);
         setHours((prev) => prev + 1);
@@ -92,7 +96,7 @@ const LightChart = ({ timerTimestamp }) => {
         setMinutes((prev) => prev + 1);
       }
 
-      setClose(tic_trade_price[tradeIndex]);
+      setClose(tic_trade_price[tickerIndex]);
 
       setChart({
         ...chart,
@@ -101,11 +105,11 @@ const LightChart = ({ timerTimestamp }) => {
             data: [
               ...chart.candlestickSeries[0].data,
               {
-                time: tic_trade_timestamp[tradeIndex],
-                open: tic_trade_price[tradeIndex],
+                time: tic_trade_timestamp[tickerIndex],
+                open: tic_trade_price[tickerIndex],
                 close,
-                high: tic_trade_price[tradeIndex],
-                low: tic_trade_price[tradeIndex],
+                high: tic_trade_price[tickerIndex],
+                low: tic_trade_price[tickerIndex],
               },
             ],
           },
@@ -115,7 +119,7 @@ const LightChart = ({ timerTimestamp }) => {
             data: [
               ...chart.histogramSeries[0].data,
               {
-                time: tic_trade_timestamp[tradeIndex],
+                time: tic_trade_timestamp[tickerIndex],
                 value: 0,
               },
             ],
@@ -129,25 +133,27 @@ const LightChart = ({ timerTimestamp }) => {
       price.close = close;
 
       // 종가
-      price.open = tic_trade_price[tradeIndex];
+      price.open = tic_trade_price[tickerIndex];
 
       // 고가
       price.high =
-        price.high < tic_trade_price[tradeIndex]
-          ? tic_trade_price[tradeIndex]
+        price.high < tic_trade_price[tickerIndex]
+          ? tic_trade_price[tickerIndex]
           : price.high;
 
       // 저가
       price.low =
-        price.low > tic_trade_price[tradeIndex]
-          ? tic_trade_price[tradeIndex]
+        price.low > tic_trade_price[tickerIndex]
+          ? tic_trade_price[tickerIndex]
           : price.low;
 
       // volume candle
       const volume = chart.histogramSeries[0].data.pop();
 
-      if (timerTimestamp >= tic_trade_timestamp[tradeIndex]) {
-        volume.value += tic_trade_volume[tradeIndex];
+      if (
+        tic_trade_timestamp[tickerIndex] >= tic_trade_timestamp[tickerIndex]
+      ) {
+        volume.value += tic_trade_volume[tickerIndex];
       }
 
       setChart({
@@ -165,10 +171,10 @@ const LightChart = ({ timerTimestamp }) => {
       });
     }
 
-    if (timerTimestamp >= tic_trade_timestamp[tradeIndex]) {
-      setTradeIndex((prev) => prev + 1);
-    }
-  }, [timerTimestamp]);
+    // if (tic_trade_timestamp[tickerIndex] >= tic_trade_timestamp[tickerIndex]) {
+    //   setTradeIndex((prev) => prev + 1);
+    // }
+  }, [tickerIndex]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
@@ -187,4 +193,4 @@ const LightChart = ({ timerTimestamp }) => {
   );
 };
 
-export default LightChart;
+export default React.memo(LightChart);

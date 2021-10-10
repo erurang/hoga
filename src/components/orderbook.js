@@ -39,8 +39,8 @@ const OrderBookTitle = styled.span`
   font-size: 16px;
 `;
 
-const OrderBook = ({ index }) => {
-  console.log("오더북 업데이트");
+const OrderBook = ({ index, tradeIndex }) => {
+  // console.log("오더북 업데이트");
 
   const { state, dispatch } = useContext(BaseContext);
 
@@ -72,7 +72,7 @@ const OrderBook = ({ index }) => {
             >
               <div
                 style={
-                  i === 4 && trade_price[index] === n.ask_price
+                  i === 4 && trade_price[tradeIndex] === n.ask_price
                     ? {
                         border: "2px solid black",
                         boxSizing: "border-box",
@@ -110,7 +110,7 @@ const OrderBook = ({ index }) => {
             >
               <div
                 style={
-                  i === 0 && trade_price[index] === n.bid_price
+                  i === 0 && trade_price[tradeIndex] === n.bid_price
                     ? {
                         border: "2px solid black",
                         boxSizing: "border-box",

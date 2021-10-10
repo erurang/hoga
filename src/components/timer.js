@@ -14,6 +14,7 @@ const Timer = () => {
   const {
     hoga: { timestamp, orderbook },
     trade: { trade_timestamp },
+    ticker: { tic_trade_timestamp },
   } = state;
 
   const newDate = useMemo(() => new Date(state.date), [state.date]);
@@ -27,9 +28,10 @@ const Timer = () => {
   });
 
   const [isPlay, setIsPlay] = useState(false);
-  const [index, setIndex] = useState(0);
 
+  const [index, setIndex] = useState(0);
   const [tradeIndex, setTradeIndex] = useState(0);
+  const [tickerIndex, setTickerIndex] = useState(0);
 
   function handlePlusTimerButton(num) {
     setIsPlay(false);
@@ -90,17 +92,13 @@ const Timer = () => {
         milliseconds: 0,
         seconds: time.seconds + 1,
       });
-    }
-
-    if (time.seconds >= 60) {
+    } else if (time.seconds >= 60) {
       setTime({
         ...time,
         seconds: 0,
         minutes: time.minutes + 1,
       });
-    }
-
-    if (time.minutes >= 60) {
+    } else if (time.minutes >= 60) {
       setTime({
         ...time,
         minutes: 0,
@@ -110,7 +108,28 @@ const Timer = () => {
 
     // update orderbook
     if (time.timestamp >= timestamp[index]) {
+      // console.log("index 설정됨 : ", index);
       setIndex((prev) => prev + 1);
+    }
+
+    // update trade
+    if (time.timestamp >= trade_timestamp[tradeIndex]) {
+      // console.log("trade index 설정됨 : ", tradeIndex);
+
+      // const update = trade_timestamp.findIndex((t) => {
+      //   return t >= time.timestamp;
+      // });
+      // // -1 만큼 업데이트 (버튼누를시에.)
+      // console.log("update", update);
+
+      setTradeIndex((prev) => prev + 1);
+    }
+
+    // update tic
+
+    if (time.timestamp >= tic_trade_timestamp[tickerIndex]) {
+      // console.log("ticker index 설정됨 : ", tickerIndex);
+      setTickerIndex((prev) => prev + 1);
     }
 
     return () => clearInterval(interval);
@@ -121,10 +140,10 @@ const Timer = () => {
       {state?.error ? (
         <ErrorPopUP message={"데이터가 존재하지 않습니다."} />
       ) : null}
-      <CoinTitle index={index} />
+      <CoinTitle tradeIndex={tradeIndex} />
       <div style={{ display: "flex" }}>
         <div>
-          <OrderBook index={index} />
+          <OrderBook index={index} tradeIndex={tradeIndex} />
           <div>
             {time.hours < 10 ? `0${time.hours}` : time.hours}:
             {time.minutes < 10 ? `0${time.minutes}` : time.minutes}:
@@ -132,32 +151,29 @@ const Timer = () => {
             {time.milliseconds < 10
               ? `0${time.milliseconds}`
               : time.milliseconds}
-            <button onClick={() => setIsPlay((prev) => !prev)}>play</button>
-            <TimerButton
-              number={1}
-              handlePlusTimerButton={handlePlusTimerButton}
-            />
-            <TimerButton
-              number={5}
-              handlePlusTimerButton={handlePlusTimerButton}
-            />
-            <TimerButton
-              number={10}
-              handlePlusTimerButton={handlePlusTimerButton}
-            />
-            <TimerButton
-              number={30}
-              handlePlusTimerButton={handlePlusTimerButton}
-            />
+            <div>
+              <button onClick={() => setIsPlay((prev) => !prev)}>play</button>
+              <TimerButton
+                number={1}
+                handlePlusTimerButton={handlePlusTimerButton}
+              />
+              <TimerButton
+                number={5}
+                handlePlusTimerButton={handlePlusTimerButton}
+              />
+              <TimerButton
+                number={10}
+                handlePlusTimerButton={handlePlusTimerButton}
+              />
+              <TimerButton
+                number={30}
+                handlePlusTimerButton={handlePlusTimerButton}
+              />
+            </div>
           </div>
-          <Trade
-            timestamp={time.timestamp}
-            isPlay={isPlay}
-            tradeIndex={tradeIndex}
-            setTradeIndex={setTradeIndex}
-          />
+          <Trade isPlay={isPlay} tradeIndex={tradeIndex} />
         </div>
-        <LightChart timerTimestamp={time.timestamp} />
+        <LightChart tickerIndex={tickerIndex} />
       </div>
     </>
   );

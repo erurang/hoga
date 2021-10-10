@@ -6,11 +6,11 @@ const Container = styled.div`
   display: flex;
 `;
 
-const CoinTitle = ({ index }) => {
+const CoinTitle = ({ tradeIndex }) => {
   const { state, dispatch } = useContext(BaseContext);
 
-  console.log("타이틀 호가 업데이트");
-  console.log(state);
+  // console.log("타이틀 호가 업데이트");
+  // console.log(state);
 
   const {
     coin,
@@ -19,15 +19,10 @@ const CoinTitle = ({ index }) => {
 
   let num = prev_closing_price;
 
-  console.log("===========");
-  console.log(num);
-  console.log(prev_closing_price);
-  console.log("===========");
-
-  if (change[index] === "FALL") {
-    num = prev_closing_price - change_price[index];
+  if (change[tradeIndex] === "FALL") {
+    num = prev_closing_price - change_price[tradeIndex];
   } else {
-    num = prev_closing_price + change_price[index];
+    num = prev_closing_price + change_price[tradeIndex];
   }
 
   return (
@@ -41,19 +36,19 @@ const CoinTitle = ({ index }) => {
           { fontSize: "32" })
         }
       >
-        {num}
+        {num.toLocaleString()}
       </h1>
       <h1>KRW</h1>
       <h1
         style={
-          change[index] === "FALL"
+          change[tradeIndex] === "FALL"
             ? { color: "#0051C7" }
-            : change[index] === "EVEN"
+            : change[tradeIndex] === "EVEN"
             ? { color: "black" }
             : { color: "#D60000" }
         }
       >
-        {change_price[index]}
+        {change_price[tradeIndex].toLocaleString()}
       </h1>
     </Container>
   );

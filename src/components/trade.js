@@ -22,7 +22,7 @@ const Div = styled.div`
   height: 30px;
 `;
 
-const Trade = ({ timestamp, isPlay, tradeIndex, setTradeIndex }) => {
+const Trade = ({ isPlay, tradeIndex }) => {
   const [tradeArray, setTradeArray] = useState([]);
 
   // trade update
@@ -31,43 +31,42 @@ const Trade = ({ timestamp, isPlay, tradeIndex, setTradeIndex }) => {
   const { state, dispath } = useContext(BaseContext);
 
   const {
-    trade: { ask_bid, trade_price, trade_timestamp, trade_volume },
+    trade: { ask_bid, trade_price, trade_volume },
   } = state;
 
   useEffect(() => {
     if (!isPlay) {
-      const update = trade_timestamp.findIndex((t) => {
-        return t >= timestamp;
-      });
+      // const update = trade_timestamp.findIndex((t) => {
+      //   return t >= timestamp;
+      // });
 
       setTradeArray(
         tradeArray.concat([
-          [trade_price[update], trade_volume[update], ask_bid[update]],
+          [
+            trade_price[tradeIndex],
+            trade_volume[tradeIndex],
+            ask_bid[tradeIndex],
+          ],
         ])
       );
-
-      setTradeIndex(update);
     } else {
       if (tradeArray.length > 9) {
         const newArray = tradeArray;
         newArray.shift();
 
-        setTradeArray(newArray);
+        setTradeArray(newArray.reverse());
       } else {
-        if (timestamp >= trade_timestamp[tradeIndex]) {
-          const newArray = tradeArray;
-          newArray.push([
-            trade_price[tradeIndex],
-            trade_volume[tradeIndex],
-            ask_bid[tradeIndex],
-          ]);
+        const newArray = tradeArray;
+        newArray.push([
+          trade_price[tradeIndex],
+          trade_volume[tradeIndex],
+          ask_bid[tradeIndex],
+        ]);
 
-          setTradeArray(newArray);
-          setTradeIndex((prev) => prev + 1);
-        }
+        setTradeArray(newArray);
       }
     }
-  }, [timestamp]);
+  }, [tradeIndex]);
 
   return (
     <>

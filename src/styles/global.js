@@ -129,8 +129,8 @@ const Reset = styled.div`
 
 const SGlobalStyles = styled.div`
   background-color: #e7ebef;
-  width: 100vh;
-  height: 100vh;
+  /* width: 100vh;
+  height: 100vh; */
 `;
 
 const GlobalStyles = ({ children }) => {

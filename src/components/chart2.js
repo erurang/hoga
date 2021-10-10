@@ -86,9 +86,8 @@ const Chart = () => {
   console.log("컴포넌트 마운트됨", state);
 
   if (state.loading) {
-    console.log("로딩중ㅇㅇ");
     return <h1>로딩중입니다..</h1>;
-  } else if (state.error) return <h1>데이터를 받아올수 없습니다.</h1>;
+  }
 
   return (
     <Container>
