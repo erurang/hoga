@@ -1,10 +1,10 @@
 import Chart, { CrosshairMode } from "kaktana-react-lightweight-charts";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import { BaseContext } from "../context/exchange/exchange";
+import { BaseContext, TickerIndexContext } from "../context/exchange/exchange";
 
-const LightChart = ({ tickerIndex }) => {
-  const { state, dispatch } = useContext(BaseContext);
+const LightChart = () => {
+  const { state } = useContext(BaseContext);
 
   // console.log("lightchart 업데이트");
 
@@ -12,9 +12,7 @@ const LightChart = ({ tickerIndex }) => {
     ticker: { tic_trade_timestamp, tic_trade_price, tic_trade_volume },
   } = state;
 
-  // const [tradeIndex, setTradeIndex] = useState(
-  //   tic_trade_timestamp.findIndex((n) => timerTimestamp <= n)
-  // );
+  const { state: tickerIndex } = useContext(TickerIndexContext);
 
   const [hours, setHours] = useState(
     new Date(tic_trade_timestamp[tickerIndex]).getHours()
@@ -24,6 +22,7 @@ const LightChart = ({ tickerIndex }) => {
   );
   const [close, setClose] = useState(tic_trade_price[0]);
 
+  // 시간만들기
   // const [] = useState(1);
 
   const [chart, setChart] = useState({
@@ -170,10 +169,6 @@ const LightChart = ({ tickerIndex }) => {
         ],
       });
     }
-
-    // if (tic_trade_timestamp[tickerIndex] >= tic_trade_timestamp[tickerIndex]) {
-    //   setTradeIndex((prev) => prev + 1);
-    // }
   }, [tickerIndex]);
 
   return (
@@ -193,4 +188,4 @@ const LightChart = ({ tickerIndex }) => {
   );
 };
 
-export default React.memo(LightChart);
+export default LightChart;

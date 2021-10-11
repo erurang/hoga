@@ -14,6 +14,18 @@ function reducer(state, action) {
         ticker: { ...action.data.ticker },
       };
 
+    case actionType.SET_TRADE_INDEX:
+      return state + 1;
+
+    case actionType.SET_TICKER_INDEX:
+      return state + 1;
+
+    case actionType.SET_ORDERBOOK_INDEX:
+      return state + 1;
+
+    case actionType.CLICK_MINUTES_BUTTON:
+      return { ...state };
+
     case actionType.ERROR_POPUP:
       return { ...state, error: true };
 

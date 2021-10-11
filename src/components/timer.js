@@ -1,15 +1,27 @@
-import { useState, useEffect, useMemo, useCallback, useContext } from "react";
-import CoinTitle from "./coinTitle";
-import OrderBook from "./orderbook";
+import { useState, useEffect, useMemo, useContext } from "react";
 import TimerButton from "./timerButton";
-import Trade from "./trade";
 import LightChart from "./lightChart";
-import { BaseContext } from "../context/exchange/exchange";
+import {
+  BaseContext,
+  OrderBookIndexContext,
+  TickerIndexContext,
+  TradeIndexContext,
+} from "../context/exchange/exchange";
 import actionType from "../context/exchange/action";
 import ErrorPopUP from "./error";
 
 const Timer = () => {
   const { state, dispatch } = useContext(BaseContext);
+
+  const { state: tradeIndex, dispatch: tradeDispatch } =
+    useContext(TradeIndexContext);
+
+  const { state: tickerIndex, dispatch: tickerDispatch } =
+    useContext(TickerIndexContext);
+
+  const { state: orderbookIndex, dispatch: orderbookDispatch } = useContext(
+    OrderBookIndexContext
+  );
 
   const {
     hoga: { timestamp, orderbook },
@@ -28,10 +40,6 @@ const Timer = () => {
   });
 
   const [isPlay, setIsPlay] = useState(false);
-
-  const [index, setIndex] = useState(0);
-  const [tradeIndex, setTradeIndex] = useState(0);
-  const [tickerIndex, setTickerIndex] = useState(0);
 
   function handlePlusTimerButton(num) {
     setIsPlay(false);
@@ -59,7 +67,8 @@ const Timer = () => {
         milliseconds: newDate.getMilliseconds(),
         timestamp: +newDate,
       });
-      setIndex(update);
+      // setOrderbookIndex(update);
+      dispatch({ type: actionType.CLICK_MINUTES_BUTTON, update });
     } else {
       // 1. 범위 9시~담날 9시 timestamp로 확인후 없으면 팝업후 리턴 만들기
       dispatch({ type: actionType.ERROR_POPUP });
@@ -70,7 +79,7 @@ const Timer = () => {
     if (!isPlay) return;
     else if (
       trade_timestamp.length - 1 === tradeIndex ||
-      orderbook.length - 1 === index
+      orderbook.length - 1 === orderbookIndex
     ) {
       console.log("길이넘음");
       setIsPlay(false);
@@ -107,9 +116,9 @@ const Timer = () => {
     }
 
     // update orderbook
-    if (time.timestamp >= timestamp[index]) {
+    if (time.timestamp >= timestamp[orderbookIndex]) {
       // console.log("index 설정됨 : ", index);
-      setIndex((prev) => prev + 1);
+      orderbookDispatch({ type: actionType.SET_ORDERBOOK_INDEX });
     }
 
     // update trade
@@ -122,14 +131,15 @@ const Timer = () => {
       // // -1 만큼 업데이트 (버튼누를시에.)
       // console.log("update", update);
 
-      setTradeIndex((prev) => prev + 1);
+      // setTradeIndex((prev) => prev + 1);
+      tradeDispatch({ type: actionType.SET_TRADE_INDEX });
     }
 
     // update tic
 
     if (time.timestamp >= tic_trade_timestamp[tickerIndex]) {
       // console.log("ticker index 설정됨 : ", tickerIndex);
-      setTickerIndex((prev) => prev + 1);
+      tickerDispatch({ type: actionType.SET_TICKER_INDEX });
     }
 
     return () => clearInterval(interval);
@@ -140,40 +150,34 @@ const Timer = () => {
       {state?.error ? (
         <ErrorPopUP message={"데이터가 존재하지 않습니다."} />
       ) : null}
-      <CoinTitle tradeIndex={tradeIndex} />
-      <div style={{ display: "flex" }}>
+
+      <div>
+        <h1>
+          {tradeIndex},{orderbookIndex},{tickerIndex}
+        </h1>
+        {time.hours < 10 ? `0${time.hours}` : time.hours}:
+        {time.minutes < 10 ? `0${time.minutes}` : time.minutes}:
+        {time.seconds < 10 ? `0${time.seconds}` : time.seconds}:
+        {time.milliseconds < 10 ? `0${time.milliseconds}` : time.milliseconds}
         <div>
-          <OrderBook index={index} tradeIndex={tradeIndex} />
-          <div>
-            {time.hours < 10 ? `0${time.hours}` : time.hours}:
-            {time.minutes < 10 ? `0${time.minutes}` : time.minutes}:
-            {time.seconds < 10 ? `0${time.seconds}` : time.seconds}:
-            {time.milliseconds < 10
-              ? `0${time.milliseconds}`
-              : time.milliseconds}
-            <div>
-              <button onClick={() => setIsPlay((prev) => !prev)}>play</button>
-              <TimerButton
-                number={1}
-                handlePlusTimerButton={handlePlusTimerButton}
-              />
-              <TimerButton
-                number={5}
-                handlePlusTimerButton={handlePlusTimerButton}
-              />
-              <TimerButton
-                number={10}
-                handlePlusTimerButton={handlePlusTimerButton}
-              />
-              <TimerButton
-                number={30}
-                handlePlusTimerButton={handlePlusTimerButton}
-              />
-            </div>
-          </div>
-          <Trade isPlay={isPlay} tradeIndex={tradeIndex} />
+          <button onClick={() => setIsPlay((prev) => !prev)}>play</button>
+          <TimerButton
+            number={1}
+            handlePlusTimerButton={handlePlusTimerButton}
+          />
+          <TimerButton
+            number={5}
+            handlePlusTimerButton={handlePlusTimerButton}
+          />
+          <TimerButton
+            number={10}
+            handlePlusTimerButton={handlePlusTimerButton}
+          />
+          <TimerButton
+            number={30}
+            handlePlusTimerButton={handlePlusTimerButton}
+          />
         </div>
-        <LightChart tickerIndex={tickerIndex} />
       </div>
     </>
   );

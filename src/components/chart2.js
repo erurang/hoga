@@ -1,9 +1,14 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import styled from "styled-components";
-import Timer from "./timer";
 import axios from "axios";
 import { BaseContext } from "../context/exchange/exchange";
 import actionType from "../context/exchange/action";
+
+import Timer from "./timer";
+import CoinTitle from "./coinTitle";
+import LightChart from "./lightChart";
+import Trade from "./trade";
+import Orderbook from "./orderbook";
 
 const Container = styled.div`
   position: relative;
@@ -91,7 +96,11 @@ const Chart = () => {
 
   return (
     <Container>
+      <CoinTitle />
       <Timer />
+      <Trade />
+      <Orderbook />
+      <LightChart />
     </Container>
   );
 };

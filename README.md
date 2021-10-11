@@ -250,14 +250,14 @@ getData() {
 - [x] 1/5/10/30 버튼을 눌렀을때 받아온 데이터에 timestamp.findIndex() === -1이면 데이터없음 팝업띄어야함
 
 ## 10/9~
-- [x] Code Refactor
-- [x] api로 받아온 getData의 정보를 전역으로 돌려서 props를 없앤다.
+- [ ] Code Refactor
+- [x] api로 받아온 getData의 정보를 context로 바꿔 props를 없앤다.
 - [x] orderbook에서 현재 거래되는 호가창 가격칸의 박스에 검은테두리 표시가 되지 않았던 버그 수정
 - [ ] 분봉을 눌렀을때 chart와 volume 캔들 업데이트
 - [ ] 10분정도의 데이터를 받고난뒤 1분봉 3분봉 5분봉 10분봉 구현
 - [ ] 전체적인 CSS 수정
 
-### Code Refactor
+### getData를 context로 지정하기
 
 어느정도 기능을 구현한후에 나는 내 코드가 매우 난잡하다는 생각이들었다. 특히 상태관리와 Props를 Props.. 하는 이 사태가 너무 맘에들지않았다.
 
@@ -325,7 +325,6 @@ const base = {
 };
 ```
 
-
 ## 발견된 버그..? 라기보단 무조건 개선해야할 사항
 
 현재 타이머의 컴포넌트가 매우우우우 느린속도로 업데이트된다.. 1초가 흐르는데 거의 5초정도가 흐른다. 
@@ -349,11 +348,32 @@ const base = {
 그래서 내가 컴포넌트를 하나하나 다시 보았다. 아.. 이거였구나 하고 발견한것은 이 부분이다.
 
  ![스크린샷 2021-10-10 오후 8 36 10](https://user-images.githubusercontent.com/56789064/136693821-7edfed0b-39b4-4a16-bd34-f089a3714259.png)
+ <img width="835" alt="스크린샷 2021-10-11 오후 5 08 34" src="https://user-images.githubusercontent.com/56789064/136754902-e7977f2c-9d08-49a1-98a4-c53ae8d7e45e.png">
 
-처음에는 timestamp를 전역(contextAPI)로 두었을때 0.01초마다 useContext를 하는 컴포넌트에서 렌더링이 일어난다는것을 몰랐다. 
+처음에는 timestamp를 전역(contextAPI)로 두어 context를 사용하는 모든 컴포넌트에서 똑같이 0.01초마다 렌더링이 일어났다.
 
-성능이 안좋아지는걸 눈으로 발견후에 다른 컴포넌트의 필요없는 렌더링을 막기위해 Timer컴포넌트에서 timestamp 상태를 관리하였다.
+성능이 안좋아지는걸 눈으로 발견후에 Timer컴포넌트에서 timestamp만 관리하도록 변경하였고
 
-그 후에 나는 위의 사진처럼 다시 props로 아래 4개의 컴포넌트에 다시 넘겨준것이다..
+Timestamp가 0.01초 동안 변할때마다 trade orderbook ticker의 timestamp배열과 비교하여  index를 기억하는 방식으로 변경하였다. 
 
-즉.. 나는 전역으로 관리하던 timestamp를 `<Timer>` 컴포넌트 안에 넣어놨을뿐이지 똑같이 다른 컴포넌트에 Timer를 props로 넘겨 모든 컴포넌트의 렌더링을 발생시킨것이였다.
+하지만 이 방법도 타이머 컴포넌트 안에서 다른 컴포넌트를 부른다는 점에서 컴포넌트 독립성이 낮다고 생각이들었다.
+
+그래서 index자체도 context로 돌려 컴포넌트간의 종속성을 최소화시켰다.
+
+### Code Refactor
+
+1. Styled를 사용할때 네이밍 구분을 해주지않아 Styled 인지 Component인지 구분이 불가함.
+   - [ ] Styled 컴포넌트 뒤에 Styled를 붙여 구분하도록 변경할것
+2. 컴포넌트의 구분 파일이 나누어있지 않아서 어떤게 어떤역할을 하는지 구분하기 힘듬
+   - [ ] 폴더로 구분해놓거나 네이밍을 routes.name 식으로 맞춰보자
+3. Timer컴포넌트에서 orderbook/trade/lightchart/cointitle 의 4개의 컴포넌트를 가지고있음(독립적이지못함)
+   - [x] timer에서 index까지 관리하여 쏴주는것이아니라 Context로 돌려서 상태를 받아올수있도록함
+4. 중복된 코드의 CSS가 많음. 이걸 줄일 방법을 고안할것
+
+3번을 진행한후 케이스마다 성능 비교를 해보자.
+
+1. 기존에 timer에서 모든 로직을 담당하고 index를 다른 컴포넌트로 props로 넘겨줄때의 성능
+   1. memo를 제거했을때와 안했을떄
+2. timer에서 모든 상태를 context로 넘겨 컴포넌트를 분리하여 다른 컴포넌트는 context에서 받아올때의 성능
+   1. memo를 제거했을떄와 안했을떄
+

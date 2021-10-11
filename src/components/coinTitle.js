@@ -1,16 +1,14 @@
 import React, { useContext } from "react";
 import styled from "styled-components";
-import { BaseContext } from "../context/exchange/exchange";
+import { BaseContext, TradeIndexContext } from "../context/exchange/exchange";
 
 const Container = styled.div`
   display: flex;
 `;
 
-const CoinTitle = ({ tradeIndex }) => {
-  const { state, dispatch } = useContext(BaseContext);
-
-  // console.log("타이틀 호가 업데이트");
-  // console.log(state);
+const CoinTitle = () => {
+  const { state } = useContext(BaseContext);
+  const { state: tradeIndex } = useContext(TradeIndexContext);
 
   const {
     coin,
@@ -54,4 +52,4 @@ const CoinTitle = ({ tradeIndex }) => {
   );
 };
 
-export default React.memo(CoinTitle);
+export default CoinTitle;
