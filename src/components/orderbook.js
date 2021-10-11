@@ -1,6 +1,10 @@
 import React, { useContext } from "react";
 import styled from "styled-components";
-import { BaseContext } from "../context/exchange/exchange";
+import {
+  BaseContext,
+  OrderBookIndexContext,
+  TradeIndexContext,
+} from "../context/exchange/exchange";
 
 const Container = styled.div`
   width: 490px;
@@ -39,10 +43,14 @@ const OrderBookTitle = styled.span`
   font-size: 16px;
 `;
 
-const OrderBook = ({ index, tradeIndex }) => {
+const OrderBook = () => {
   // console.log("오더북 업데이트");
 
-  const { state, dispatch } = useContext(BaseContext);
+  const { state } = useContext(BaseContext);
+
+  const { state: orderbookIndex } = useContext(OrderBookIndexContext);
+
+  const { state: tradeIndex } = useContext(TradeIndexContext);
 
   const {
     hoga: { orderbook, total_ask_size, total_bid_size },
@@ -51,8 +59,7 @@ const OrderBook = ({ index, tradeIndex }) => {
 
   return (
     <Container>
-      <h1>{index}</h1>
-      {orderbook[index]
+      {orderbook[orderbookIndex]
         .sort((a, b) => b.ask_price - a.ask_price)
         .map((n, i) => (
           <PriceContainer key={i}>
@@ -93,7 +100,7 @@ const OrderBook = ({ index, tradeIndex }) => {
             </Price>
           </PriceContainer>
         ))}
-      {orderbook[index]
+      {orderbook[orderbookIndex]
         .sort((a, b) => a.ask_price - b.ask_price)
         .map((n, i) => (
           <PriceContainer key={i}>
@@ -138,7 +145,7 @@ const OrderBook = ({ index, tradeIndex }) => {
       <PriceContainer>
         <AskPrice>
           <div style={{ height: "15px" }}></div>
-          {total_ask_size[index].toFixed(3)}
+          {total_ask_size[orderbookIndex].toFixed(3)}
         </AskPrice>
         <Price>
           <div style={{ height: "15px" }}></div>
@@ -146,11 +153,11 @@ const OrderBook = ({ index, tradeIndex }) => {
         </Price>
         <BidPrice>
           <div style={{ height: "15px" }}></div>
-          {total_bid_size[index].toFixed(3)}
+          {total_bid_size[orderbookIndex].toFixed(3)}
         </BidPrice>
       </PriceContainer>
     </Container>
   );
 };
 
-export default React.memo(OrderBook);
+export default OrderBook;
