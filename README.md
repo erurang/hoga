@@ -370,10 +370,32 @@ Timestamp가 0.01초 동안 변할때마다 trade orderbook ticker의 timestamp�
    - [x] timer에서 index까지 관리하여 쏴주는것이아니라 Context로 돌려서 상태를 받아올수있도록함
 4. 중복된 코드의 CSS가 많음. 이걸 줄일 방법을 고안할것
 
-3번을 진행한후 케이스마다 성능 비교를 해보자.
+### 성능 테스트
 
 1. 기존에 timer에서 모든 로직을 담당하고 index를 다른 컴포넌트로 props로 넘겨줄때의 성능
    1. memo를 제거했을때와 안했을떄
 2. timer에서 모든 상태를 context로 넘겨 컴포넌트를 분리하여 다른 컴포넌트는 context에서 받아올때의 성능
    1. memo를 제거했을떄와 안했을떄
 
+### 1번의 경우.
+
+<img width="1285" alt="스크린샷 2021-10-12 오전 12 56 28" src="https://user-images.githubusercontent.com/56789064/136820258-d176e671-2332-471f-b7ed-09f93315560a.png">
+
+props로 넘겨주었지만 React.memo로 인해 리렌더링이 일어나지않아 hoga/trade/lightchart/cointitle 값이 업데이트될떄 3.5~6ms 정도 소요되고
+
+0.01초마다 timer 컴포넌트의 변경으로는 0.01초 정도의 렌더링 시간이 소요된다
+
+### 1-1번의 경우 
+
+Timer(부모) 컴포넌트가 업데이트될떄마다 hoga/trade/lightchart/cointitle(자식 )컴포넌트가 렌더링이 일어나는데
+
+매 렌더링마다 2.5~3ms 의 시간이 소요되는것을 볼수있다.
+
+### 2번의 경우
+
+<img width="1375" alt="스크린샷 2021-10-12 오전 2 36 54" src="https://user-images.githubusercontent.com/56789064/136831917-5efb3608-26ef-464e-a11c-ed9a266fd789.png">
+
+
+### 2-1번의 경우
+
+React.memo의 사용과 무관하게 contextAPI의 useReducer에서 상태가 변화될때만 컴포넌트를 업데이트시키기때문에 1번과 2번과 2-1번은 차이가없었다.
