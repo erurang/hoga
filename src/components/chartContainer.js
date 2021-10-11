@@ -5,7 +5,7 @@ import Chart from "./chart2";
 import Search from "./search";
 
 const ChartContainer = () => {
-  const { state, dispatch } = useContext(BaseContext);
+  const { state } = useContext(BaseContext);
 
   if (state.date && state.coin)
     return (

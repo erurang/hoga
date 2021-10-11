@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useReducer, useContext } from "react";
 import styled from "styled-components";
-import { BaseContext } from "../context/exchange/exchange";
+import { BaseContext, TradeIndexContext } from "../context/exchange/exchange";
 
 const Li = styled.li`
   font-size: 11px;
@@ -22,49 +22,36 @@ const Div = styled.div`
   height: 30px;
 `;
 
-const Trade = ({ isPlay, tradeIndex }) => {
-  const [tradeArray, setTradeArray] = useState([]);
-
+const Trade = () => {
   // trade update
   console.log("trade update");
 
-  const { state, dispath } = useContext(BaseContext);
+  const { state } = useContext(BaseContext);
+  const { state: tradeIndex } = useContext(TradeIndexContext);
 
   const {
     trade: { ask_bid, trade_price, trade_volume },
   } = state;
 
+  const [tradeArray, setTradeArray] = useState([
+    [trade_price[tradeIndex], trade_volume[tradeIndex], ask_bid[tradeIndex]],
+  ]);
+
   useEffect(() => {
-    if (!isPlay) {
-      // const update = trade_timestamp.findIndex((t) => {
-      //   return t >= timestamp;
-      // });
+    if (tradeArray.length > 9) {
+      const newArray = tradeArray;
+      newArray.shift();
 
-      setTradeArray(
-        tradeArray.concat([
-          [
-            trade_price[tradeIndex],
-            trade_volume[tradeIndex],
-            ask_bid[tradeIndex],
-          ],
-        ])
-      );
+      setTradeArray(newArray.reverse());
     } else {
-      if (tradeArray.length > 9) {
-        const newArray = tradeArray;
-        newArray.shift();
+      const newArray = tradeArray;
+      newArray.push([
+        trade_price[tradeIndex],
+        trade_volume[tradeIndex],
+        ask_bid[tradeIndex],
+      ]);
 
-        setTradeArray(newArray.reverse());
-      } else {
-        const newArray = tradeArray;
-        newArray.push([
-          trade_price[tradeIndex],
-          trade_volume[tradeIndex],
-          ask_bid[tradeIndex],
-        ]);
-
-        setTradeArray(newArray);
-      }
+      setTradeArray(newArray);
     }
   }, [tradeIndex]);
 
@@ -89,4 +76,4 @@ const Trade = ({ isPlay, tradeIndex }) => {
   );
 };
 
-export default React.memo(Trade);
+export default Trade;
