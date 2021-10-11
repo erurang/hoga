@@ -4,7 +4,7 @@ import reducer from "./reducer";
 const base = {
   date: null,
   coin: "AXS",
-  error: null,
+  error: false,
   loading: true,
   hoga: {},
   trade: {},

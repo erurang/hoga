@@ -1,14 +1,14 @@
 import { useState, useEffect, useMemo, useContext } from "react";
 import TimerButton from "./timerButton";
-import LightChart from "./lightChart";
+
 import {
   BaseContext,
   OrderBookIndexContext,
   TickerIndexContext,
   TradeIndexContext,
-} from "../context/exchange/exchange";
-import actionType from "../context/exchange/action";
-import ErrorPopUP from "./error";
+} from "../../context/exchange/exchange";
+import actionType from "../../context/exchange/action";
+import ErrorPopUP from "../error";
 
 const Timer = () => {
   const { state, dispatch } = useContext(BaseContext);

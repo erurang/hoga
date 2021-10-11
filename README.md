@@ -257,12 +257,13 @@ getData() {
 ## Code Refactor
 
 1. Styled를 사용할때 네이밍 구분을 해주지않아 Styled 인지 Component인지 구분이 불가함.
-   - [ ] Styled 컴포넌트 뒤에 Styled를 붙여 구분하도록 변경할것
+   - [x] Styled 컴포넌트 뒤에 Styled를 붙여 구분하도록 변경할것
 2. 컴포넌트의 구분 파일이 나누어있지 않아서 어떤게 어떤역할을 하는지 구분하기 힘듬
-   - [ ] 폴더로 구분해놓거나 네이밍을 routes.name 식으로 맞춰보자
+   - [x] 폴더로 구분해놓거나 네이밍을 routes.name 식으로 맞춰보자
 3. Timer컴포넌트에서 orderbook/trade/lightchart/cointitle 의 4개의 컴포넌트를 가지고있음(독립적이지못함)
    - [x] timer에서 index까지 관리하여 쏴주는것이아니라 Context로 돌려서 상태를 받아올수있도록함
 4. 중복된 코드의 CSS가 많음. 이걸 줄일 방법을 고안할것
+   - [ ] styled의 props를 통한 재사용성 높일것
 
 ### getData를 context로 지정하기
 
@@ -413,3 +414,6 @@ Timestamp가 0.01초 동안 변할때마다 trade orderbook ticker의 timestamp�
 성능 문제는 아니라는것을 알았다. 그럼 대체 뭐때문에 나는 시간지연을 겪고있는건가??
 
 [setTimeout과 setInterval을 이용한 호출 스케줄링](https://ko.javascript.info/settimeout-setinterval)글을 공부해보자.
+
+## 10/12~
+

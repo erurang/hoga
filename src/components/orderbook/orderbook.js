@@ -4,9 +4,9 @@ import {
   BaseContext,
   OrderBookIndexContext,
   TradeIndexContext,
-} from "../context/exchange/exchange";
+} from "../../context/exchange/exchange";
 
-const Container = styled.div`
+const ContainerStyled = styled.div`
   width: 490px;
   height: 520px;
   overflow: auto;
@@ -15,24 +15,24 @@ const Container = styled.div`
   letter-spacing: 1px;
 `;
 
-const PriceContainer = styled.div`
+const PriceContainerStyled = styled.div`
   display: flex;
   height: 45px;
   border-top: 1px solid #f1f1f4;
   position: relative;
 `;
 
-const AskPrice = styled.div`
+const AskPriceStyled = styled.div`
   text-align: right;
   width: 162px;
 `;
 
-const BidPrice = styled.div`
+const BidPriceStyled = styled.div`
   text-align: left;
   width: 125px;
 `;
 
-const Price = styled.div`
+const PriceStyled = styled.div`
   font-weight: 700;
   width: 200px;
   position: relative;
@@ -58,16 +58,16 @@ const OrderBook = () => {
   } = state;
 
   return (
-    <Container>
+    <ContainerStyled>
       {orderbook[orderbookIndex]
         .sort((a, b) => b.ask_price - a.ask_price)
         .map((n, i) => (
-          <PriceContainer key={i}>
-            <AskPrice>
+          <PriceContainerStyled key={i}>
+            <AskPriceStyled>
               <div style={{ height: "15px" }}></div>
               {n.ask_size.toFixed(3)}
-            </AskPrice>
-            <Price
+            </AskPriceStyled>
+            <PriceStyled
               style={
                 prev_closing_price < n.ask_price.toLocaleString()
                   ? {
@@ -97,15 +97,15 @@ const OrderBook = () => {
                 100
               ).toFixed(2)}
               %
-            </Price>
-          </PriceContainer>
+            </PriceStyled>
+          </PriceContainerStyled>
         ))}
       {orderbook[orderbookIndex]
         .sort((a, b) => a.ask_price - b.ask_price)
         .map((n, i) => (
-          <PriceContainer key={i}>
-            <AskPrice></AskPrice>
-            <Price
+          <PriceContainerStyled key={i}>
+            <AskPriceStyled></AskPriceStyled>
+            <PriceStyled
               style={
                 prev_closing_price < n.ask_price
                   ? { color: "#d60000", backgroundColor: "rgba(216,14,53,.04)" }
@@ -135,28 +135,28 @@ const OrderBook = () => {
                 100
               ).toFixed(2)}
               %
-            </Price>
-            <BidPrice>
+            </PriceStyled>
+            <BidPriceStyled>
               <div style={{ height: "15px" }}></div>
               {n.bid_size.toFixed(3)}
-            </BidPrice>
-          </PriceContainer>
+            </BidPriceStyled>
+          </PriceContainerStyled>
         ))}
-      <PriceContainer>
-        <AskPrice>
+      <PriceContainerStyled>
+        <AskPriceStyled>
           <div style={{ height: "15px" }}></div>
           {total_ask_size[orderbookIndex].toFixed(3)}
-        </AskPrice>
-        <Price>
+        </AskPriceStyled>
+        <PriceStyled>
           <div style={{ height: "15px" }}></div>
           수량{" "}
-        </Price>
-        <BidPrice>
+        </PriceStyled>
+        <BidPriceStyled>
           <div style={{ height: "15px" }}></div>
           {total_bid_size[orderbookIndex].toFixed(3)}
-        </BidPrice>
-      </PriceContainer>
-    </Container>
+        </BidPriceStyled>
+      </PriceContainerStyled>
+    </ContainerStyled>
   );
 };
 

@@ -1,7 +1,10 @@
-import Chart, { CrosshairMode } from "kaktana-react-lightweight-charts";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import Chart from "kaktana-react-lightweight-charts";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import { BaseContext, TickerIndexContext } from "../context/exchange/exchange";
+import {
+  BaseContext,
+  TickerIndexContext,
+} from "../../context/exchange/exchange";
 
 const LightChart = () => {
   const { state } = useContext(BaseContext);

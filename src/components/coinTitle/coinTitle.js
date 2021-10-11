@@ -1,6 +1,9 @@
 import React, { useContext } from "react";
 import styled from "styled-components";
-import { BaseContext, TradeIndexContext } from "../context/exchange/exchange";
+import {
+  BaseContext,
+  TradeIndexContext,
+} from "../../context/exchange/exchange";
 
 const Container = styled.div`
   display: flex;
