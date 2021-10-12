@@ -32,26 +32,47 @@ const BidPriceStyled = styled.div`
   width: 125px;
 `;
 
+const UpPriceStyled = styled.div`
+  font-weight: 700;
+  width: 200px;
+  position: relative;
+  color: ${(props) => (props.pc < props.ap ? "#d60000" : "#0051c7")};
+  background-color: "rgba(0,98,223,.03)";
+`;
+
+const DownPriceStyled = styled.div`
+  font-weight: 700;
+  width: 200px;
+  position: relative;
+  color: ${(props) => (props.cp < props.ap ? "#d60000" : "#0051c7")};
+  background-color: "rgba(216,14,53,.04)";
+`;
+
 const PriceStyled = styled.div`
   font-weight: 700;
   width: 200px;
   position: relative;
+  color: ${(props) => (props.cp < props.ap ? "#d60000" : "#0051c7")};
+  /* background-color: "rgba(216,14,53,.04)"; */
 `;
 
-const OrderBookTitle = styled.span`
-  color: "#115DCB";
-  font-size: 16px;
+const RadiusStyled = styled.div`
+  ${(props) =>
+    props.index === props.num && props.tp === props.ap
+      ? {
+          border: "2px solid black",
+          boxSizing: "border-box",
+          width: "100%",
+          height: "100%",
+          position: "absolute",
+        }
+      : ""};
 `;
 
 const OrderBook = () => {
-  // console.log("오더북 업데이트");
-
   const { state } = useContext(BaseContext);
-
   const { state: orderbookIndex } = useContext(OrderBookIndexContext);
-
   const { state: tradeIndex } = useContext(TradeIndexContext);
-
   const {
     hoga: { orderbook, total_ask_size, total_bid_size },
     trade: { prev_closing_price, trade_price },
@@ -67,29 +88,13 @@ const OrderBook = () => {
               <div style={{ height: "15px" }}></div>
               {n.ask_size.toFixed(3)}
             </AskPriceStyled>
-            <PriceStyled
-              style={
-                prev_closing_price < n.ask_price.toLocaleString()
-                  ? {
-                      color: "#d60000",
-                      backgroundColor: "rgba(0,98,223,.03)",
-                    }
-                  : { color: "#0051c7", backgroundColor: "rgba(0,98,223,.03)" }
-              }
-            >
-              <div
-                style={
-                  i === 4 && trade_price[tradeIndex] === n.ask_price
-                    ? {
-                        border: "2px solid black",
-                        boxSizing: "border-box",
-                        width: "100%",
-                        height: "100%",
-                        position: "absolute",
-                      }
-                    : {}
-                }
-              ></div>
+            <UpPriceStyled cp={prev_closing_price} ap={n.ask_price}>
+              <RadiusStyled
+                index={i}
+                tp={trade_price[tradeIndex]}
+                ap={n.ask_price}
+                num={4}
+              ></RadiusStyled>
               <div style={{ height: "15px" }}></div>
               {n.ask_price.toLocaleString()}{" "}
               {(
@@ -97,7 +102,7 @@ const OrderBook = () => {
                 100
               ).toFixed(2)}
               %
-            </PriceStyled>
+            </UpPriceStyled>
           </PriceContainerStyled>
         ))}
       {orderbook[orderbookIndex]
@@ -105,29 +110,13 @@ const OrderBook = () => {
         .map((n, i) => (
           <PriceContainerStyled key={i}>
             <AskPriceStyled></AskPriceStyled>
-            <PriceStyled
-              style={
-                prev_closing_price < n.ask_price
-                  ? { color: "#d60000", backgroundColor: "rgba(216,14,53,.04)" }
-                  : {
-                      color: "#0051c7",
-                      backgroundColor: "rgba(216,14,53,.04)",
-                    }
-              }
-            >
-              <div
-                style={
-                  i === 0 && trade_price[tradeIndex] === n.bid_price
-                    ? {
-                        border: "2px solid black",
-                        boxSizing: "border-box",
-                        width: "100%",
-                        height: "100%",
-                        position: "absolute",
-                      }
-                    : {}
-                }
-              ></div>
+            <DownPriceStyled cp={prev_closing_price} ap={n.ask_price}>
+              <RadiusStyled
+                index={i}
+                tp={trade_price[tradeIndex]}
+                ap={n.bid_price}
+                num={0}
+              ></RadiusStyled>
               <div style={{ height: "15px" }}></div>
               {n.bid_price.toLocaleString()}{" "}
               {(
@@ -135,7 +124,7 @@ const OrderBook = () => {
                 100
               ).toFixed(2)}
               %
-            </PriceStyled>
+            </DownPriceStyled>
             <BidPriceStyled>
               <div style={{ height: "15px" }}></div>
               {n.bid_size.toFixed(3)}

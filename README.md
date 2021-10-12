@@ -263,7 +263,7 @@ getData() {
 3. Timer컴포넌트에서 orderbook/trade/lightchart/cointitle 의 4개의 컴포넌트를 가지고있음(독립적이지못함)
    - [x] timer에서 index까지 관리하여 쏴주는것이아니라 Context로 돌려서 상태를 받아올수있도록함
 4. 중복된 코드의 CSS가 많음. 이걸 줄일 방법을 고안할것
-   - [ ] styled의 props를 통한 재사용성 높일것
+   - [x] styled의 props를 통한 재사용성 높일것
 
 ### getData를 context로 지정하기
 

@@ -1,7 +1,6 @@
-import { useState } from "react";
 import styled from "styled-components";
 
-const Container = styled.div`
+const ContainerStyled = styled.div`
   position: absolute;
   width: 200px;
   height: 50px;
@@ -16,10 +15,10 @@ const Container = styled.div`
 
 const ErrorPopUP = ({ message }) => {
   return (
-    <Container>
+    <ContainerStyled>
       <button onClick={() => {}}>닫기</button>
       <span>{message}</span>
-    </Container>
+    </ContainerStyled>
   );
 };
 

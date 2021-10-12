@@ -5,7 +5,7 @@ import {
   TradeIndexContext,
 } from "../../context/exchange/exchange";
 
-const Container = styled.div`
+const ContainerStyled = styled.div`
   display: flex;
 `;
 
@@ -27,7 +27,7 @@ const CoinTitle = () => {
   }
 
   return (
-    <Container>
+    <ContainerStyled>
       <h1>{coin}</h1>
       <h1
         style={
@@ -51,7 +51,7 @@ const CoinTitle = () => {
       >
         {change_price[tradeIndex].toLocaleString()}
       </h1>
-    </Container>
+    </ContainerStyled>
   );
 };
 
