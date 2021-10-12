@@ -17,16 +17,20 @@ const ContainerStyled = styled.div`
 const Chart = () => {
   const { state, dispatch } = useContext(BaseContext);
 
-  useEffect(async () => {
+  useEffect(() => {
     console.log("데이터 가져오는중...");
     // date coin 입력처리
 
-    try {
-      const data = await getDataApi("date", "coin");
-      dispatch({ type: actionType.SET_DATA, data });
-    } catch {
-      dispatch({ type: actionType.ERROR_POPUP });
+    async function getData() {
+      try {
+        const data = await getDataApi("date", "coin");
+        dispatch({ type: actionType.SET_DATA, data });
+      } catch {
+        dispatch({ type: actionType.ERROR_POPUP });
+      }
     }
+
+    getData();
   }, []);
 
   console.log("컴포넌트 마운트됨", state);

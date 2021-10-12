@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import styled from "styled-components";
 import {
   BaseContext,
@@ -27,7 +27,7 @@ const DivStyled = styled.div`
 
 const Trade = () => {
   // trade update
-  console.log("trade update");
+  // console.log("trade update");
 
   const { state } = useContext(BaseContext);
   const { state: tradeIndex } = useContext(TradeIndexContext);

@@ -26,7 +26,7 @@ const LightChart = () => {
   const [close, setClose] = useState(tic_trade_price[0]);
 
   // 시간만들기
-  // const [] = useState(1);
+  const [type, setType] = useState(1);
 
   const [chart, setChart] = useState({
     options: {

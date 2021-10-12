@@ -249,9 +249,9 @@ getData() {
 - [x] api로 받아온 getData의 정보를 context로 바꿔 props를 없앤다.
 - [x] 시간지연이 일어나는 이유는 무엇인가? 성능테스트
   - [ ] setTimeout과 setInterval?
-- [ ] Code Refactor
+- [x] 분봉을 눌렀을때 timer timestamp와 각 컴포넌트 index를 최신화시킴
 - [ ] 분봉을 눌렀을때 chart와 volume 캔들 업데이트
-- [ ] 10분정도의 데이터를 받고난뒤 1분봉 3분봉 5분봉 10분봉 구현
+- [ ] Code Refactor
 - [ ] 전체적인 CSS 수정
 
 ## Code Refactor
@@ -266,6 +266,8 @@ getData() {
    - [x] styled의 props를 통한 재사용성 높일것
 
 ### getData를 context로 지정하기
+
+- [x] api로 받아온 getData의 정보를 context로 바꿔 props를 없앤다.
 
 어느정도 기능을 구현한후에 나는 내 코드가 매우 난잡하다는 생각이들었다. 특히 상태관리와 Props를 Props.. 하는 이 사태가 너무 맘에들지않았다.
 
@@ -335,27 +337,21 @@ const base = {
 
 ### 발견된 사이드이펙트..?
 
-현재 타이머의 컴포넌트가 매우우우우 느린속도로 업데이트된다.. 1초가 흐르는데 거의 5초정도가 흐른다. 
+~~현재 타이머의 컴포넌트가 매우우우우 느린속도로 업데이트된다.. 1초가 흐르는데 거의 5초정도가 흐른다. ~~
 
-이렇게 오래 걸린다는건.. 너무나 많은 렌더링 연산작업이 들어간다는것..
+~~이렇게 오래 걸린다는건.. 너무나 많은 렌더링 연산작업이 들어간다는것..~~
 
-이게 느려질만한게 생각해보면 0.01초마다 `<Timer> <Orderbook> <Lightchart> <Trade>` 4개 컴포넌트의 조건문들을 둘러보고
+~~이게 느려질만한게 생각해보면 0.01초마다 `<Timer> <Orderbook> <Lightchart> <Trade>` 4개 컴포넌트의 조건문들을 둘러보고~~
 
-상태를 0.01초마다 동시다발적으로 업데이트하고..  하니까 안느려질래야 안느려질수가 없는거같다..
+~~상태를 0.01초마다 동시다발적으로 업데이트하고..  하니까 안느려질래야 안느려질수가 없는거같다..~~
 
-컴포넌트의 렌더링을 줄일 방법과 현재의 비교 조건의 시간복잡도를 더 줄일 생각을 해야할거같다. (현재도 n번이긴한데..)
+~~컴포넌트의 렌더링을 줄일 방법과 현재의 비교 조건의 시간복잡도를 더 줄일 생각을 해야할거같다. (현재도 n번이긴한데..)~~
 
-그리고 CSS가 렌더링에 미치는 영향도 고려해야할 부분이다. (레이아웃이 다시 일어나는 요소들을 없애기위해..)
+~~그리고 CSS가 렌더링에 미치는 영향도 고려해야할 부분이다. (레이아웃이 다시 일어나는 요소들을 없애기위해..) 한번 문제가 무엇인지 한번 찾아봐야할거같다.~~
 
-한번 문제가 무엇인지 한번 찾아봐야할거같다.
+위의 고민과는 다른 점에서 문제를 발견했다. 위의 말 그대로 렌더링이 자주 일어난다는것은 상태변경, props의 변경, 부모컴포넌트의 변경이 일어난다는것이다.
 
-## 10/10 수정---------------
-
-위의 고민과는 다른 방식으로 문제해결을 하였다.
-
-위의 말 그대로 렌더링이 자주 일어난다는것은 상태변경이나 props의 변경이 일어난다는것이다.
-
-그래서 내가 컴포넌트를 하나하나 다시 보았다. 아.. 이거였구나 하고 발견한것은 이 부분이다.
+그래서 내가 짠 코드를 하나하나 다시 보았다. 아.. 이거였구나 하고 발견한것은 이 부분이다.
 
  ![스크린샷 2021-10-10 오후 8 36 10](https://user-images.githubusercontent.com/56789064/136693821-7edfed0b-39b4-4a16-bd34-f089a3714259.png)
  <img width="835" alt="스크린샷 2021-10-11 오후 5 08 34" src="https://user-images.githubusercontent.com/56789064/136754902-e7977f2c-9d08-49a1-98a4-c53ae8d7e45e.png">
@@ -375,6 +371,8 @@ Timestamp가 0.01초 동안 변할때마다 trade orderbook ticker의 timestamp�
 ## 10/11~12
 
 ### 성능 테스트
+
+- [x] 시간지연이 일어나는 이유는 무엇인가? 성능테스트
 
 1. 기존에 `Timer`에서 모든 로직을 담당하고 index를 다른 컴포넌트로 `props`로 넘겨줄때의 성능
    1. `React.memo`를 제거했을때와 안했을떄의 성능
@@ -417,3 +415,46 @@ Timestamp가 0.01초 동안 변할때마다 trade orderbook ticker의 timestamp�
 
 ## 10/12~
 
+- [x] 분봉을 눌렀을때 timer timestamp와 각 컴포넌트 index를 최신화시킴
+
+이전까지는 시간 이동 버튼을 눌렀을때 timer의 timestamp만 업데이트 시켯다.
+
+그래서 `time.timestamp >= component timestamp`를 계속 만족하는 상황이 나와서 아래 3개의 dispatch가 계속 작동하였다.
+
+즉 수정된 timestamp가 될때까지 까지 계속 +1씩 인덱스를 업데이트하여 페이지가 맛이가는 경우가생겼다. (버튼을눌러도 반응을안함..)
+
+```
+orderbookDispatch({ type: actionType.SET_ORDERBOOK_INDEX });
+tradeDispatch({ type: actionType.SET_TRADE_INDEX });
+tickerDispatch({ type: actionType.SET_TICKER_INDEX });
+```
+
+그래서 아래처럼 새로 만들어진 timestamp와 비교하여 인덱스를 덮어씌워 주었다.
+```
+const tradeIndex = trade_timestamp.findIndex((t) => {
+        return t >= +newDate;
+      });
+
+const orderbookIndex = timestamp.findIndex((t) => {
+        return t >= +newDate;
+      });
+
+const tickerIndex = tic_trade_timestamp.findIndex((t) => {
+        return t >= +newDate;
+      });
+
+tradeDispatch({
+        type: actionType.CLICK_MINUTES_BUTTON,
+        num: tradeIndex,
+      });
+
+orderbookDispatch({
+        type: actionType.CLICK_MINUTES_BUTTON,
+        num: orderbookIndex,
+      });
+
+tickerDispatch({
+        type: actionType.CLICK_MINUTES_BUTTON,
+        num: tickerIndex,
+      });
+```

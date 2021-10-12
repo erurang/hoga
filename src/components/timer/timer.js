@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useContext } from "react";
+import { useState, useEffect, useMemo, useContext, useCallback } from "react";
 import TimerButton from "./timerButton";
 
 import {
@@ -47,7 +47,7 @@ const Timer = () => {
 
     let plusTime = 0;
 
-    if (number === 1) plusTime = 10000;
+    if (number === 1) plusTime = 60000;
     else if (number === 5) plusTime = 300000;
     else if (number === 10) plusTime = 600000;
     else if (number === 30) plusTime = 1800000;
@@ -60,6 +60,7 @@ const Timer = () => {
     });
 
     if (update !== -1) {
+      console.log("update before", time);
       setTime({
         hours: newDate.getHours(),
         minutes: newDate.getMinutes(),
@@ -67,8 +68,40 @@ const Timer = () => {
         milliseconds: newDate.getMilliseconds(),
         timestamp: +newDate,
       });
-      // setOrderbookIndex(update);
-      dispatch({ type: actionType.CLICK_MINUTES_BUTTON, update });
+      console.log("update AFTER", time);
+      // 바로 업데이트안됨!!! 위 공부
+      console.log("newDate", newDate);
+
+      // 여기서 index 갱신해야함
+
+      // update oderbook
+
+      const tradeIndex = trade_timestamp.findIndex((t) => {
+        return t >= +newDate;
+      });
+
+      const orderbookIndex = timestamp.findIndex((t) => {
+        return t >= +newDate;
+      });
+
+      const tickerIndex = tic_trade_timestamp.findIndex((t) => {
+        return t >= +newDate;
+      });
+
+      tradeDispatch({
+        type: actionType.CLICK_MINUTES_BUTTON,
+        num: tradeIndex,
+      });
+
+      orderbookDispatch({
+        type: actionType.CLICK_MINUTES_BUTTON,
+        num: orderbookIndex,
+      });
+
+      tickerDispatch({
+        type: actionType.CLICK_MINUTES_BUTTON,
+        num: tickerIndex,
+      });
     } else {
       // 1. 범위 9시~담날 9시 timestamp로 확인후 없으면 팝업후 리턴 만들기
       dispatch({ type: actionType.ERROR_POPUP });
@@ -124,12 +157,6 @@ const Timer = () => {
     // update trade
     if (time.timestamp >= trade_timestamp[tradeIndex]) {
       // console.log("trade index 설정됨 : ", tradeIndex);
-
-      // const update = trade_timestamp.findIndex((t) => {
-      //   return t >= time.timestamp;
-      // });
-      // // -1 만큼 업데이트 (버튼누를시에.)
-      // console.log("update", update);
 
       // setTradeIndex((prev) => prev + 1);
       tradeDispatch({ type: actionType.SET_TRADE_INDEX });
