@@ -1,13 +1,20 @@
-import React, { useState, useEffect, useReducer, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import styled from "styled-components";
-import { BaseContext, TradeIndexContext } from "../context/exchange/exchange";
+import {
+  BaseContext,
+  TradeIndexContext,
+} from "../../context/exchange/exchange";
 
-const Li = styled.li`
+const ContainerStyled = styled.div`
+  position: absolute;
+`;
+
+const LiStyled = styled.li`
   font-size: 11px;
   letter-spacing: 1px;
 `;
 
-const Ul = styled.ul`
+const UlStyled = styled.ul`
   position: absolute;
   top: 300px;
   left: 10px;
@@ -16,7 +23,7 @@ const Ul = styled.ul`
   overflow: hidden;
 `;
 
-const Div = styled.div`
+const DivStyled = styled.div`
   display: flex;
   justify-content: space-around;
   height: 30px;
@@ -24,7 +31,7 @@ const Div = styled.div`
 
 const Trade = () => {
   // trade update
-  console.log("trade update");
+  // console.log("trade update");
 
   const { state } = useContext(BaseContext);
   const { state: tradeIndex } = useContext(TradeIndexContext);
@@ -42,7 +49,7 @@ const Trade = () => {
       const newArray = tradeArray;
       newArray.shift();
 
-      setTradeArray(newArray.reverse());
+      setTradeArray(newArray);
     } else {
       const newArray = tradeArray;
       newArray.push([
@@ -56,23 +63,23 @@ const Trade = () => {
   }, [tradeIndex]);
 
   return (
-    <>
-      <Ul>
-        <Div>
+    <ContainerStyled>
+      <UlStyled>
+        <DivStyled>
           <span>체결가</span>
           <span>체결량</span>
-        </Div>
+        </DivStyled>
         {tradeArray.map((n, i) => (
-          <Li
+          <LiStyled
             key={i}
             style={n[2] === "BID" ? { color: "#d60000" } : { color: "#0051c7" }}
           >
             <span style={{ color: "#595959" }}>{n[0].toLocaleString()}</span>{" "}
             <span style={{ textAlign: "right" }}>{n[1].toFixed(3)}</span>
-          </Li>
+          </LiStyled>
         ))}
-      </Ul>
-    </>
+      </UlStyled>
+    </ContainerStyled>
   );
 };
 

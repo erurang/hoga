@@ -2,9 +2,11 @@ import actionType from "./action";
 
 function reducer(state, action) {
   switch (action.type) {
+    case actionType.SET_IS_PLAY:
+      return action.play;
+
     case actionType.SELECT_DAY:
       return { ...state, date: action.timestamp };
-
     case actionType.SET_DATA:
       return {
         ...state,
@@ -24,7 +26,7 @@ function reducer(state, action) {
       return state + 1;
 
     case actionType.CLICK_MINUTES_BUTTON:
-      return { ...state };
+      return action.num - 1;
 
     case actionType.ERROR_POPUP:
       return { ...state, error: true };

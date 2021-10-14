@@ -1,8 +1,11 @@
 import React, { useContext } from "react";
 import styled from "styled-components";
-import { BaseContext, TradeIndexContext } from "../context/exchange/exchange";
+import {
+  BaseContext,
+  TradeIndexContext,
+} from "../../context/exchange/exchange";
 
-const Container = styled.div`
+const ContainerStyled = styled.div`
   display: flex;
 `;
 
@@ -24,7 +27,7 @@ const CoinTitle = () => {
   }
 
   return (
-    <Container>
+    <ContainerStyled>
       <h1>{coin}</h1>
       <h1
         style={
@@ -48,7 +51,7 @@ const CoinTitle = () => {
       >
         {change_price[tradeIndex].toLocaleString()}
       </h1>
-    </Container>
+    </ContainerStyled>
   );
 };
 

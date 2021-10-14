@@ -1,14 +1,15 @@
-import { useState, useEffect, useMemo, useContext } from "react";
+import { useState, useEffect, useMemo, useContext, useCallback } from "react";
 import TimerButton from "./timerButton";
-import LightChart from "./lightChart";
+
 import {
   BaseContext,
+  IsPlayContext,
   OrderBookIndexContext,
   TickerIndexContext,
   TradeIndexContext,
-} from "../context/exchange/exchange";
-import actionType from "../context/exchange/action";
-import ErrorPopUP from "./error";
+} from "../../context/exchange/exchange";
+import actionType from "../../context/exchange/action";
+import ErrorPopUP from "../error";
 
 const Timer = () => {
   const { state, dispatch } = useContext(BaseContext);
@@ -22,6 +23,8 @@ const Timer = () => {
   const { state: orderbookIndex, dispatch: orderbookDispatch } = useContext(
     OrderBookIndexContext
   );
+
+  const { state: isPlay, dispatch: isPlayDispatch } = useContext(IsPlayContext);
 
   const {
     hoga: { timestamp, orderbook },
@@ -39,15 +42,32 @@ const Timer = () => {
     timestamp: +newDate,
   });
 
-  const [isPlay, setIsPlay] = useState(false);
+  // function handleMinusTimerButton(num) {
+  //   isPlayDispatch({type : actionType.SET_IS_PLAY})
+  //   const number =+num.target.innerText
+
+  //   let minusTime = 0
+
+  //   if (number === -1) minusTime = -60000;
+  //   else if (number === -5) minusTime = -300000;
+  //   else if (number === -10) minusTime = -600000;
+  //   else if (number === -30) minusTime = -1800000;
+
+  //   const newDate = new Date(time.timestamp + minusTime);
+
+  //   const update = timestamp.findIndex((t) => {
+  //     return t >= +newDate
+  //   })
+
+  // }
 
   function handlePlusTimerButton(num) {
-    setIsPlay(false);
+    isPlayDispatch({ type: actionType.SET_IS_PLAY, play: false });
     const number = +num.target.innerText;
 
     let plusTime = 0;
 
-    if (number === 1) plusTime = 10000;
+    if (number === 1) plusTime = 60000;
     else if (number === 5) plusTime = 300000;
     else if (number === 10) plusTime = 600000;
     else if (number === 30) plusTime = 1800000;
@@ -60,6 +80,7 @@ const Timer = () => {
     });
 
     if (update !== -1) {
+      console.log("update before", time);
       setTime({
         hours: newDate.getHours(),
         minutes: newDate.getMinutes(),
@@ -67,8 +88,40 @@ const Timer = () => {
         milliseconds: newDate.getMilliseconds(),
         timestamp: +newDate,
       });
-      // setOrderbookIndex(update);
-      dispatch({ type: actionType.CLICK_MINUTES_BUTTON, update });
+      console.log("update AFTER", time);
+      // 바로 업데이트안됨!!! 위 공부
+      console.log("newDate", newDate);
+
+      // 여기서 index 갱신해야함
+
+      // update oderbook
+
+      const tradeIndex = trade_timestamp.findIndex((t) => {
+        return t >= +newDate;
+      });
+
+      const orderbookIndex = timestamp.findIndex((t) => {
+        return t >= +newDate;
+      });
+
+      const tickerIndex = tic_trade_timestamp.findIndex((t) => {
+        return t >= +newDate;
+      });
+
+      tradeDispatch({
+        type: actionType.CLICK_MINUTES_BUTTON,
+        num: tradeIndex,
+      });
+
+      orderbookDispatch({
+        type: actionType.CLICK_MINUTES_BUTTON,
+        num: orderbookIndex,
+      });
+
+      tickerDispatch({
+        type: actionType.CLICK_MINUTES_BUTTON,
+        num: tickerIndex,
+      });
     } else {
       // 1. 범위 9시~담날 9시 timestamp로 확인후 없으면 팝업후 리턴 만들기
       dispatch({ type: actionType.ERROR_POPUP });
@@ -82,7 +135,7 @@ const Timer = () => {
       orderbook.length - 1 === orderbookIndex
     ) {
       console.log("길이넘음");
-      setIsPlay(false);
+      isPlayDispatch({ type: actionType.SET_IS_PLAY, play: false });
       dispatch({ type: actionType.ERROR_POPUP });
       return;
     }
@@ -125,12 +178,6 @@ const Timer = () => {
     if (time.timestamp >= trade_timestamp[tradeIndex]) {
       // console.log("trade index 설정됨 : ", tradeIndex);
 
-      // const update = trade_timestamp.findIndex((t) => {
-      //   return t >= time.timestamp;
-      // });
-      // // -1 만큼 업데이트 (버튼누를시에.)
-      // console.log("update", update);
-
       // setTradeIndex((prev) => prev + 1);
       tradeDispatch({ type: actionType.SET_TRADE_INDEX });
     }
@@ -152,15 +199,21 @@ const Timer = () => {
       ) : null}
 
       <div>
-        <h1>
+        {/* <h1>
           {tradeIndex},{orderbookIndex},{tickerIndex}
-        </h1>
+        </h1> */}
         {time.hours < 10 ? `0${time.hours}` : time.hours}:
         {time.minutes < 10 ? `0${time.minutes}` : time.minutes}:
         {time.seconds < 10 ? `0${time.seconds}` : time.seconds}:
         {time.milliseconds < 10 ? `0${time.milliseconds}` : time.milliseconds}
         <div>
-          <button onClick={() => setIsPlay((prev) => !prev)}>play</button>
+          <button
+            onClick={() =>
+              isPlayDispatch({ type: actionType.SET_IS_PLAY, play: !isPlay })
+            }
+          >
+            play
+          </button>
           <TimerButton
             number={1}
             handlePlusTimerButton={handlePlusTimerButton}

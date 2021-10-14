@@ -1,4 +1,5 @@
 const actionType = {
+  SET_IS_PLAY: "SET_IS_PLAY",
   SELECT_DAY: "SELECT_DAY",
   SELECT_COIN: "SELECT_COIN",
   SET_DATA: "SELECT_DATA",
