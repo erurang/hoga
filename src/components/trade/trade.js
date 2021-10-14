@@ -5,6 +5,10 @@ import {
   TradeIndexContext,
 } from "../../context/exchange/exchange";
 
+const ContainerStyled = styled.div`
+  position: absolute;
+`;
+
 const LiStyled = styled.li`
   font-size: 11px;
   letter-spacing: 1px;
@@ -45,7 +49,7 @@ const Trade = () => {
       const newArray = tradeArray;
       newArray.shift();
 
-      setTradeArray(newArray.reverse());
+      setTradeArray(newArray);
     } else {
       const newArray = tradeArray;
       newArray.push([
@@ -59,7 +63,7 @@ const Trade = () => {
   }, [tradeIndex]);
 
   return (
-    <>
+    <ContainerStyled>
       <UlStyled>
         <DivStyled>
           <span>체결가</span>
@@ -75,7 +79,7 @@ const Trade = () => {
           </LiStyled>
         ))}
       </UlStyled>
-    </>
+    </ContainerStyled>
   );
 };
 

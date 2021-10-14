@@ -14,18 +14,30 @@ const base = {
 const orderbookIndex = 0;
 const tradeIndex = 0;
 const tickerIndex = 0;
+const isPlay = false;
 
 export const BaseContext = createContext();
 export const OrderBookIndexContext = createContext();
 export const TradeIndexContext = createContext();
 export const TickerIndexContext = createContext();
+export const IsPlayContext = createContext();
 
 // excahnge
+
+const IsPlayStore = ({ children }) => {
+  const [state, dispatch] = useReducer(reducer, isPlay);
+
+  return (
+    <IsPlayContext.Provider value={{ state, dispatch }}>
+      {children}
+    </IsPlayContext.Provider>
+  );
+};
 
 const OrderbookIndexStore = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, orderbookIndex);
 
-  console.log("orderbookStore", state);
+  // console.log("orderbookStore", state);
   return (
     <OrderBookIndexContext.Provider value={{ state, dispatch }}>
       {children}
@@ -36,7 +48,7 @@ const OrderbookIndexStore = ({ children }) => {
 const TradeIndexStore = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, tradeIndex);
 
-  console.log("tradeStore", state);
+  // console.log("tradeStore", state);
   return (
     <TradeIndexContext.Provider value={{ state, dispatch }}>
       {children}
@@ -47,7 +59,7 @@ const TradeIndexStore = ({ children }) => {
 const TickerIndexStore = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, tickerIndex);
 
-  console.log("TickerStore", state);
+  // console.log("TickerStore", state);
   return (
     <TickerIndexContext.Provider value={{ state, dispatch }}>
       {children}
@@ -58,12 +70,14 @@ const TickerIndexStore = ({ children }) => {
 const BaseStore = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, base);
 
-  console.log("baseStore");
+  // console.log("baseStore");
   return (
     <BaseContext.Provider value={{ state, dispatch }}>
       <TradeIndexStore>
         <OrderbookIndexStore>
-          <TickerIndexStore>{children}</TickerIndexStore>
+          <TickerIndexStore>
+            <IsPlayStore>{children}</IsPlayStore>
+          </TickerIndexStore>
         </OrderbookIndexStore>
       </TradeIndexStore>
     </BaseContext.Provider>

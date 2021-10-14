@@ -3,6 +3,7 @@ import TimerButton from "./timerButton";
 
 import {
   BaseContext,
+  IsPlayContext,
   OrderBookIndexContext,
   TickerIndexContext,
   TradeIndexContext,
@@ -23,6 +24,8 @@ const Timer = () => {
     OrderBookIndexContext
   );
 
+  const { state: isPlay, dispatch: isPlayDispatch } = useContext(IsPlayContext);
+
   const {
     hoga: { timestamp, orderbook },
     trade: { trade_timestamp },
@@ -39,10 +42,27 @@ const Timer = () => {
     timestamp: +newDate,
   });
 
-  const [isPlay, setIsPlay] = useState(false);
+  // function handleMinusTimerButton(num) {
+  //   isPlayDispatch({type : actionType.SET_IS_PLAY})
+  //   const number =+num.target.innerText
+
+  //   let minusTime = 0
+
+  //   if (number === -1) minusTime = -60000;
+  //   else if (number === -5) minusTime = -300000;
+  //   else if (number === -10) minusTime = -600000;
+  //   else if (number === -30) minusTime = -1800000;
+
+  //   const newDate = new Date(time.timestamp + minusTime);
+
+  //   const update = timestamp.findIndex((t) => {
+  //     return t >= +newDate
+  //   })
+
+  // }
 
   function handlePlusTimerButton(num) {
-    setIsPlay(false);
+    isPlayDispatch({ type: actionType.SET_IS_PLAY, play: false });
     const number = +num.target.innerText;
 
     let plusTime = 0;
@@ -115,7 +135,7 @@ const Timer = () => {
       orderbook.length - 1 === orderbookIndex
     ) {
       console.log("길이넘음");
-      setIsPlay(false);
+      isPlayDispatch({ type: actionType.SET_IS_PLAY, play: false });
       dispatch({ type: actionType.ERROR_POPUP });
       return;
     }
@@ -179,15 +199,21 @@ const Timer = () => {
       ) : null}
 
       <div>
-        <h1>
+        {/* <h1>
           {tradeIndex},{orderbookIndex},{tickerIndex}
-        </h1>
+        </h1> */}
         {time.hours < 10 ? `0${time.hours}` : time.hours}:
         {time.minutes < 10 ? `0${time.minutes}` : time.minutes}:
         {time.seconds < 10 ? `0${time.seconds}` : time.seconds}:
         {time.milliseconds < 10 ? `0${time.milliseconds}` : time.milliseconds}
         <div>
-          <button onClick={() => setIsPlay((prev) => !prev)}>play</button>
+          <button
+            onClick={() =>
+              isPlayDispatch({ type: actionType.SET_IS_PLAY, play: !isPlay })
+            }
+          >
+            play
+          </button>
           <TimerButton
             number={1}
             handlePlusTimerButton={handlePlusTimerButton}
