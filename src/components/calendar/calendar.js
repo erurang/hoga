@@ -21,11 +21,6 @@ const Calendar = () => {
       // timestamp: +new Date(event) + 32400000,
     });
   };
-
-  //1633444179421
-  //1633444115283
-  //1633444158705
-
   return <ReactCalendar onChange={(e) => handleOnchange(e)} />;
 };
 

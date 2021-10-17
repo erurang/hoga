@@ -6,14 +6,22 @@ import {
   BaseContext,
   IsPlayContext,
   TickerIndexContext,
+  TimeLoopContext,
 } from "../../context/exchange/exchange";
 import TimerButton from "../timer/timerButton";
+
+const ContainerStyled = styled.div`
+  display: flex;
+  float: left;
+`;
 
 const LightChart = () => {
   const { state } = useContext(BaseContext);
 
   const { state: tickerIndex } = useContext(TickerIndexContext);
   const { state: isPlay, dispatch: isPlayDispatch } = useContext(IsPlayContext);
+
+  const { state: timeLoop } = useContext(TimeLoopContext);
 
   const {
     ticker: { tic_trade_timestamp, tic_trade_price, tic_trade_volume },
@@ -31,7 +39,10 @@ const LightChart = () => {
     low: tic_trade_price[0],
   });
 
-  const [volumeCandle, setVolumeCandle] = useState(0);
+  const [volumeCandle, setVolumeCandle] = useState({
+    time: tic_trade_timestamp[tickerIndex],
+    value: 0,
+  });
 
   const [candleArray, setCandleArray] = useState([]);
   const [volumeArray, setVolumeArray] = useState([]);
@@ -52,9 +63,6 @@ const LightChart = () => {
         rightBarStaysOnScroll: false,
         borderVisible: false,
         borderColor: "#fff000",
-        visible: true,
-        timeVisible: true,
-        secondsVisible: false,
       },
     },
     rightPriceScale: {
@@ -105,7 +113,7 @@ const LightChart = () => {
     const num = +number.target.innerText;
 
     if (num !== type && candleArray.length > num - 1) {
-      isPlayDispatch({ type: actionType.SET_IS_PLAY, play: false });
+      // isPlayDispatch({ type: actionType.SET_IS_PLAY, play: false });
       setType(num);
       makeCandle(num);
     }
@@ -205,7 +213,7 @@ const LightChart = () => {
         low: tic_trade_price[tickerIndex],
       });
 
-      setVolumeCandle(0);
+      setVolumeCandle({ time: tic_trade_timestamp[tickerIndex], value: 0 });
 
       console.log("1분봉 추가", candleArray);
 
@@ -285,7 +293,10 @@ const LightChart = () => {
 
       volume.value += tic_trade_volume[tickerIndex];
 
-      setVolumeCandle({ time: price.time, value: volume.value });
+      setVolumeCandle({
+        time: price.time,
+        value: volumeCandle.value + tic_trade_volume[tickerIndex],
+      });
 
       setChart({
         ...chart,
@@ -303,8 +314,22 @@ const LightChart = () => {
     }
   }, [tickerIndex, isPlay]);
 
+  // useEffect(() => {
+  //   // 1. tickerIndex를 가져온다
+  //   // 2. candle volume array를 다시 1분 기준으로 만든다.. ?
+
+  //   const candle = []
+  //   const volume = []
+
+  //   for (let i =0; i<= tickerIndex; i++) {
+
+  //   }
+
+  //   makeMinutesCandle(type);
+
+  // }, [timeLoop]);
   return (
-    <>
+    <ContainerStyled>
       <div>
         <TimerButton number={1} handlePlusTimerButton={handlePlusTimerButton} />
         <TimerButton number={3} handlePlusTimerButton={handlePlusTimerButton} />
@@ -317,9 +342,6 @@ const LightChart = () => {
           number={30}
           handlePlusTimerButton={handlePlusTimerButton}
         />
-        <button onClick={() => console.log(candleArray)}>candlearray</button>
-        <button onClick={() => console.log(minutesCandle)}>minutes</button>
-        <button onClick={() => console.log(type)}>type</button>
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
         <Chart
@@ -334,7 +356,7 @@ const LightChart = () => {
           width={500}
         />
       </div>
-    </>
+    </ContainerStyled>
   );
 };
 

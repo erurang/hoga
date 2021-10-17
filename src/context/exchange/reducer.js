@@ -28,6 +28,9 @@ function reducer(state, action) {
     case actionType.CLICK_MINUTES_BUTTON:
       return action.num - 1;
 
+    case actionType.TIME_LOOP:
+      return action.num - 1;
+
     case actionType.ERROR_POPUP:
       return { ...state, error: true };
 

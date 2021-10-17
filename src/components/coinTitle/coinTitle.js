@@ -6,7 +6,11 @@ import {
 } from "../../context/exchange/exchange";
 
 const ContainerStyled = styled.div`
-  display: flex;
+  /* display: flex;
+  width: 100%;
+  height: 130px;
+  flex-direction: column;
+  background-color: #fff; */
 `;
 
 const CoinTitle = () => {
@@ -15,31 +19,31 @@ const CoinTitle = () => {
 
   const {
     coin,
-    trade: { prev_closing_price, change, change_price },
+    trade: { trade_price, prev_closing_price, change, change_price },
   } = state;
 
-  let num = prev_closing_price;
-
-  if (change[tradeIndex] === "FALL") {
-    num = prev_closing_price - change_price[tradeIndex];
-  } else {
-    num = prev_closing_price + change_price[tradeIndex];
-  }
+  // if (change[tradeIndex] === "FALL") {
+  //   num = prev_closing_price - change_price[tradeIndex];
+  // } else {
+  //   num = prev_closing_price + change_price[tradeIndex];
+  // }
 
   return (
     <ContainerStyled>
-      <h1>{coin}</h1>
-      <h1
+      <div>
+        <span>이미지 {coin}</span>
+      </div>
+      <div
         style={
-          (num < prev_closing_price
+          (change[tradeIndex] === "FALL"
             ? { color: "#0051C7" }
             : { color: "#D60000" },
-          { fontSize: "32" })
+          { fontSize: "32px" })
         }
       >
-        {num.toLocaleString()}
-      </h1>
-      <h1>KRW</h1>
+        {trade_price[tradeIndex].toLocaleString()}
+        <span style={{ fontSize: "14px" }}>KRW</span>
+      </div>
       <h1
         style={
           change[tradeIndex] === "FALL"
@@ -49,7 +53,10 @@ const CoinTitle = () => {
             : { color: "#D60000" }
         }
       >
-        {change_price[tradeIndex].toLocaleString()}
+        <span>
+          전일대비
+          {change_price[tradeIndex].toLocaleString()}
+        </span>
       </h1>
     </ContainerStyled>
   );

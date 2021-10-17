@@ -6,10 +6,16 @@ import {
   IsPlayContext,
   OrderBookIndexContext,
   TickerIndexContext,
+  TimeLoopContext,
   TradeIndexContext,
 } from "../../context/exchange/exchange";
 import actionType from "../../context/exchange/action";
-import ErrorPopUP from "../error";
+
+import styled from "styled-components";
+
+const ContainerStyled = styled.div`
+  display: flex;
+`;
 
 const Timer = () => {
   const { state, dispatch } = useContext(BaseContext);
@@ -25,6 +31,8 @@ const Timer = () => {
   );
 
   const { state: isPlay, dispatch: isPlayDispatch } = useContext(IsPlayContext);
+
+  const { dispatch: timeLoopDispatch } = useContext(TimeLoopContext);
 
   const {
     hoga: { timestamp, orderbook },
@@ -42,25 +50,6 @@ const Timer = () => {
     timestamp: +newDate,
   });
 
-  // function handleMinusTimerButton(num) {
-  //   isPlayDispatch({type : actionType.SET_IS_PLAY})
-  //   const number =+num.target.innerText
-
-  //   let minusTime = 0
-
-  //   if (number === -1) minusTime = -60000;
-  //   else if (number === -5) minusTime = -300000;
-  //   else if (number === -10) minusTime = -600000;
-  //   else if (number === -30) minusTime = -1800000;
-
-  //   const newDate = new Date(time.timestamp + minusTime);
-
-  //   const update = timestamp.findIndex((t) => {
-  //     return t >= +newDate
-  //   })
-
-  // }
-
   function handlePlusTimerButton(num) {
     isPlayDispatch({ type: actionType.SET_IS_PLAY, play: false });
     const number = +num.target.innerText;
@@ -74,7 +63,6 @@ const Timer = () => {
 
     const newDate = new Date(time.timestamp + plusTime);
 
-    // 이거 수정해야함. => plusTIme을 한번더한 실수 수정
     const update = timestamp.findIndex((t) => {
       return t >= +newDate;
     });
@@ -88,11 +76,6 @@ const Timer = () => {
         milliseconds: newDate.getMilliseconds(),
         timestamp: +newDate,
       });
-      console.log("update AFTER", time);
-      // 바로 업데이트안됨!!! 위 공부
-      console.log("newDate", newDate);
-
-      // 여기서 index 갱신해야함
 
       // update oderbook
 
@@ -122,6 +105,11 @@ const Timer = () => {
         type: actionType.CLICK_MINUTES_BUTTON,
         num: tickerIndex,
       });
+
+      timeLoopDispatch({
+        type: actionType.TIME_LOOP,
+        num: tickerIndex,
+      });
     } else {
       // 1. 범위 9시~담날 9시 timestamp로 확인후 없으면 팝업후 리턴 만들기
       dispatch({ type: actionType.ERROR_POPUP });
@@ -146,7 +134,7 @@ const Timer = () => {
         milliseconds: time.milliseconds + 1,
         timestamp: time.timestamp + 10,
       });
-    }, 1);
+    }, 10);
 
     if (time.milliseconds >= 99) {
       setTime({
@@ -193,11 +181,7 @@ const Timer = () => {
   }, [isPlay, time]);
 
   return (
-    <>
-      {state?.error ? (
-        <ErrorPopUP message={"데이터가 존재하지 않습니다."} />
-      ) : null}
-
+    <ContainerStyled>
       <div>
         {/* <h1>
           {tradeIndex},{orderbookIndex},{tickerIndex}
@@ -232,7 +216,7 @@ const Timer = () => {
           />
         </div>
       </div>
-    </>
+    </ContainerStyled>
   );
 };
 
