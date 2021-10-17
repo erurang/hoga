@@ -15,12 +15,14 @@ const orderbookIndex = 0;
 const tradeIndex = 0;
 const tickerIndex = 0;
 const isPlay = false;
+const timeLoop = 0;
 
 export const BaseContext = createContext();
 export const OrderBookIndexContext = createContext();
 export const TradeIndexContext = createContext();
 export const TickerIndexContext = createContext();
 export const IsPlayContext = createContext();
+export const TimeLoopContext = createContext();
 
 // excahnge
 
@@ -67,6 +69,16 @@ const TickerIndexStore = ({ children }) => {
   );
 };
 
+const TimeLoopStore = ({ children }) => {
+  const [state, dispatch] = useReducer(reducer, timeLoop);
+
+  return (
+    <TimeLoopContext.Provider value={{ state, dispatch }}>
+      {children}
+    </TimeLoopContext.Provider>
+  );
+};
+
 const BaseStore = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, base);
 
@@ -76,7 +88,9 @@ const BaseStore = ({ children }) => {
       <TradeIndexStore>
         <OrderbookIndexStore>
           <TickerIndexStore>
-            <IsPlayStore>{children}</IsPlayStore>
+            <IsPlayStore>
+              <TimeLoopStore>{children}</TimeLoopStore>
+            </IsPlayStore>
           </TickerIndexStore>
         </OrderbookIndexStore>
       </TradeIndexStore>

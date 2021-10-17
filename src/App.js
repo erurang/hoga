@@ -5,12 +5,14 @@ import Home from "./pages/home";
 import Exchange from "./pages/exchange";
 import GlobalStyles from "./styles/global";
 import { BaseStore } from "./context/exchange/exchange";
+import Header from "./components/header/header";
 
 function App() {
   return (
     <BrowserRouter>
       <Switch>
         <GlobalStyles>
+          <Header />
           <Route path={router.HOME} exact>
             <Home />
           </Route>

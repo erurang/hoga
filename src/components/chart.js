@@ -6,12 +6,14 @@ import actionType from "../context/exchange/action";
 import Timer from "./timer/timer";
 import CoinTitle from "./coinTitle/coinTitle";
 import LightChart from "./lightChart/lightChart";
-import Trade from "./trade/trade";
 import Orderbook from "./orderbook/orderbook";
 import { getDataApi } from "./servies/api";
 
 const ContainerStyled = styled.div`
-  position: relative;
+  /* position: relative; */
+  margin-top: 100px;
+  padding-left: 20px;
+  /* display: flex; */
 `;
 
 const Chart = () => {
@@ -44,7 +46,6 @@ const Chart = () => {
       <CoinTitle />
       <Timer />
       <LightChart />
-      <Trade />
       <Orderbook />
     </ContainerStyled>
   );

@@ -7,18 +7,20 @@ import {
 
 const ContainerStyled = styled.div`
   position: absolute;
+  z-index: 1;
+  padding: 30px;
 `;
 
 const LiStyled = styled.li`
-  font-size: 11px;
+  font-size: 16px;
   letter-spacing: 1px;
+  text-align: right;
 `;
 
 const UlStyled = styled.ul`
-  position: absolute;
-  top: 300px;
-  left: 10px;
   width: 150px;
+  display: flex;
+  flex-direction: column;
   height: 200px;
   overflow: hidden;
 `;
@@ -70,17 +72,29 @@ const Trade = () => {
           <span>체결량</span>
         </DivStyled>
         {tradeArray.map((n, i) => (
-          <LiStyled
-            key={i}
-            style={n[2] === "BID" ? { color: "#d60000" } : { color: "#0051c7" }}
-          >
-            <span style={{ color: "#595959" }}>{n[0].toLocaleString()}</span>{" "}
-            <span style={{ textAlign: "right" }}>{n[1].toFixed(3)}</span>
-          </LiStyled>
+          <div style={{ display: "flex" }}>
+            <LiStyled
+              key={n[0]}
+              style={
+                (n[2] === "BID" ? { color: "#d60000" } : { color: "#0051c7" },
+                { marginRight: "20px" })
+              }
+            >
+              <span style={{ color: "#595959" }}>{n[0].toLocaleString()}</span>{" "}
+            </LiStyled>
+            <LiStyled
+              key={i}
+              style={
+                n[2] === "BID" ? { color: "#d60000" } : { color: "#0051c7" }
+              }
+            >
+              <span style={{ textAlign: "right" }}>{n[1].toFixed(3)}</span>
+            </LiStyled>
+          </div>
         ))}
       </UlStyled>
     </ContainerStyled>
   );
 };
 
-export default Trade;
+export default React.memo(Trade);

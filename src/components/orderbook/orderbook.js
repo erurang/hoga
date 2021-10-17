@@ -5,10 +5,11 @@ import {
   OrderBookIndexContext,
   TradeIndexContext,
 } from "../../context/exchange/exchange";
+import Trade from "../trade/trade";
 
 const ContainerStyled = styled.div`
   width: 490px;
-  height: 520px;
+  height: 550px;
   overflow: auto;
   border: 1px solid #f1f1f4;
   text-align: center;
@@ -105,6 +106,7 @@ const OrderBook = () => {
             </UpPriceStyled>
           </PriceContainerStyled>
         ))}
+      <Trade />
       {orderbook[orderbookIndex]
         .sort((a, b) => a.ask_price - b.ask_price)
         .map((n, i) => (
@@ -131,6 +133,7 @@ const OrderBook = () => {
             </BidPriceStyled>
           </PriceContainerStyled>
         ))}
+
       <PriceContainerStyled>
         <AskPriceStyled>
           <div style={{ height: "15px" }}></div>
