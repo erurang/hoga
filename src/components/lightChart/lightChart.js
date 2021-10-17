@@ -102,357 +102,97 @@ const LightChart = () => {
   });
 
   function handlePlusTimerButton(number) {
-    // isPlayDispatch({ type: actionType.SET_IS_PLAY, play: false });
     const num = +number.target.innerText;
 
     if (num !== type && candleArray.length > num - 1) {
-      makeCandle(num);
-      setType(num);
       isPlayDispatch({ type: actionType.SET_IS_PLAY, play: false });
+      setType(num);
+      makeCandle(num);
     }
   }
 
-  function makeCandle(num) {
-    // isPlayDispatch({ type: actionType.SET_IS_PLAY, play: false });
+  function makeMinutesCandle(num) {
+    let arr = [...candleArray];
+    let arr2 = [...volumeArray];
 
-    if (num === 1) {
-      // console.log("1");
-      // console.log("candlearray:", candleArray);
+    const candle = [];
+    const volume = [];
 
-      const candle = [...candleArray, minutesCandle];
+    const divide = parseInt(arr.length / num);
 
-      // console.log(candle);
+    for (let i = 0; i < divide; i++) {
+      const a = arr.splice(0, num);
+      const b = arr2.splice(0, num);
 
-      setChart({
-        ...chart,
-        candlestickSeries: [
-          {
-            data: [...candle],
-          },
-        ],
-        // histogramSeries: [
-        //   {
-        //     data: [...volumeArray],
-        //   },
-        // ],
-      });
-    } else if (num === 3) {
-      // console.log("3");
-      // console.log("candleArray", candleArray);
+      let time = a[0].time;
+      let high = a[0].high;
+      let low = a[0].low;
+      let close = a[0].close;
+      let open = a[0].open;
 
-      // 여태 만들어진 1분봉을 복사해온다
-      let arr = [...candleArray];
-      let arr2 = [...volumeArray];
+      for (let x of a) {
+        if (x.high > high) high = x.high;
 
-      // 만약 만들어진 1분봉이 하나도 없으면 (타이머 막시작했을떄)
-      // 최소 3개이상 캔들이 필요합니다. 메세지띄우기
+        if (x.low < low) low = x.low;
 
-      const candle = [];
-      const volume = [];
-
-      // 3개씩 캔들을 나눈다.
-      const divide = parseInt(arr.length / 3);
-
-      // 3개씩 묶어서 배열에서 뺴낸다.
-      for (let i = 0; i < divide; i++) {
-        const a = arr.splice(0, 3);
-        // console.log(a);
-
-        // 시작시간은 초기시간
-        let time = a[0].time;
-        let high = a[0].high;
-        let low = a[0].low;
-        let close = a[0].close;
-        let open = a[0].open;
-        //
-
-        for (let x of a) {
-          // 만약 가져온 값중 이게더 고가면 고가로 설정
-          if (x.high > high) high = x.high;
-          // 만약 가져온 값중 이게더 저가면 저가로설정
-          if (x.low < low) low = x.low;
-          // 종가
-          close = x.close;
-        }
-        candle.push({ time, open, close, high, low });
+        close = x.close;
       }
 
-      // 3개씩 만들고 남은캔들에 대하여 다시 고가저가 탐색
-      const lastCandle = { ...minutesCandle };
+      let value = 0;
 
-      if (arr.length) {
-        // console.log("arr :", arr);
-        lastCandle.open = arr[0].open;
-        for (let i = 0; i < arr.length; i++) {
-          if (lastCandle.high < arr[i].high) lastCandle.high = arr[i].high;
-          if (lastCandle.low > arr[i].low) lastCandle.low = arr[i].low;
-        }
+      for (let x of b) {
+        value += x.value;
       }
 
-      // console.log("new 3minute", candle);
-      // console.log(chart.candlestickSeries[0].data);
-
-      setChart({
-        ...chart,
-        candlestickSeries: [
-          {
-            data: [...candle, lastCandle],
-          },
-        ],
-      });
-
-      // volume
-      // for (let i = 0; i < divide; i++) {
-      //   const b = arr2.splice(0, 3);
-      //   let value = 0;
-      //   let time = b[0].time;
-
-      //   for (let x of b) {
-      //     value += x.value;
-      //   }
-      //   volume.push({ time, value });
-      // }
-
-      // const lastVolumeCandle = volumeCandle;
-
-      // for (let i = 0; i < arr2.length; i++) {
-      //   lastVolumeCandle[i].value
-      // }
-
-      // console.log(candle);
-      // setChart({
-      //   ...chart,
-      //   candlestickSeries: [
-      //     {
-      //       data: [...candle],
-      //     },
-      //   ],
-      //   // histogramSeries: [
-      //   //   {
-      //   //     data: [
-      //   //       ...volume,
-      //   //       chart.histogramSeries[0].data[
-      //   //         chart.histogramSeries[0].data.length - 1
-      //   //       ],
-      //   //     ],
-      //   //   },
-      //   // ],
-      // });
-    } else if (num === 5) {
-      // console.log("5");
-      // console.log("candleArray", candleArray);
-
-      // 여태 만들어진 1분봉을 복사해온다
-      let arr = [...candleArray];
-      let arr2 = [...volumeArray];
-
-      // 만약 만들어진 1분봉이 하나도 없으면 (타이머 막시작했을떄)
-      // 최소 3개이상 캔들이 필요합니다. 메세지띄우기
-
-      const candle = [];
-      const volume = [];
-
-      // 3개씩 캔들을 나눈다.
-      const divide = parseInt(arr.length / 5);
-
-      // 3개씩 묶어서 배열에서 뺴낸다.
-      for (let i = 0; i < divide; i++) {
-        const a = arr.splice(0, 5);
-
-        // 시작시간은 초기시간
-        let time = a[0].time;
-        let high = a[0].high;
-        let low = a[0].low;
-        let close = a[0].close;
-        let open = a[0].open;
-        //
-
-        for (let x of a) {
-          // 만약 가져온 값중 이게더 고가면 고가로 설정
-          if (x.high > high) high = x.high;
-          // 만약 가져온 값중 이게더 저가면 저가로설정
-          if (x.low < low) low = x.low;
-          // 종가
-          close = x.close;
-        }
-        candle.push({ time, open, close, high, low });
-      }
-
-      // 3개씩 만들고 남은캔들에 대하여 다시 고가저가 탐색
-      const lastCandle = { ...minutesCandle };
-
-      if (arr.length) {
-        // console.log("arr :", arr);
-        lastCandle.open = arr[0].open;
-        for (let i = 0; i < arr.length; i++) {
-          if (lastCandle.high < arr[i].high) lastCandle.high = arr[i].high;
-          if (lastCandle.low > arr[i].low) lastCandle.low = arr[i].low;
-        }
-      }
-
-      // console.log("new 5minute", candle);
-      // console.log(chart.candlestickSeries[0].data);
-
-      setChart({
-        ...chart,
-        candlestickSeries: [
-          {
-            data: [...candle, lastCandle],
-          },
-        ],
-      });
-    } else if (num === 10) {
-      // console.log("10");
-      // console.log("candleArray", candleArray);
-
-      // 여태 만들어진 1분봉을 복사해온다
-      let arr = [...candleArray];
-      let arr2 = [...volumeArray];
-
-      // 만약 만들어진 1분봉이 하나도 없으면 (타이머 막시작했을떄)
-      // 최소 3개이상 캔들이 필요합니다. 메세지띄우기
-
-      const candle = [];
-      const volume = [];
-
-      // 3개씩 캔들을 나눈다.
-      const divide = parseInt(arr.length / 10);
-
-      // 3개씩 묶어서 배열에서 뺴낸다.
-      for (let i = 0; i < divide; i++) {
-        const a = arr.splice(0, 10);
-
-        // 시작시간은 초기시간
-        let time = a[0].time;
-        let high = a[0].high;
-        let low = a[0].low;
-        let close = a[0].close;
-        let open = a[0].open;
-        //
-
-        for (let x of a) {
-          // 만약 가져온 값중 이게더 고가면 고가로 설정
-          if (x.high > high) high = x.high;
-          // 만약 가져온 값중 이게더 저가면 저가로설정
-          if (x.low < low) low = x.low;
-          // 종가
-          close = x.close;
-        }
-        candle.push({ time, open, close, high, low });
-      }
-
-      // 3개씩 만들고 남은캔들에 대하여 다시 고가저가 탐색
-      const lastCandle = { ...minutesCandle };
-
-      if (arr.length) {
-        // console.log("arr :", arr);
-        lastCandle.open = arr[0].open;
-        for (let i = 0; i < arr.length; i++) {
-          if (lastCandle.high < arr[i].high) lastCandle.high = arr[i].high;
-          if (lastCandle.low > arr[i].low) lastCandle.low = arr[i].low;
-        }
-      }
-
-      // console.log("new 10minute", candle);
-      // console.log(chart.candlestickSeries[0].data);
-
-      setChart({
-        ...chart,
-        candlestickSeries: [
-          {
-            data: [...candle, lastCandle],
-          },
-        ],
-      });
-    } else if (num === 30) {
-      // console.log("10");
-      // console.log("candleArray", candleArray);
-
-      // 여태 만들어진 1분봉을 복사해온다
-      let arr = [...candleArray];
-      let arr2 = [...volumeArray];
-
-      // 만약 만들어진 1분봉이 하나도 없으면 (타이머 막시작했을떄)
-      // 최소 3개이상 캔들이 필요합니다. 메세지띄우기
-
-      const candle = [];
-      const volume = [];
-
-      // 3개씩 캔들을 나눈다.
-      const divide = parseInt(arr.length / 30);
-
-      // 3개씩 묶어서 배열에서 뺴낸다.
-      for (let i = 0; i < divide; i++) {
-        const a = arr.splice(0, 30);
-
-        // 시작시간은 초기시간
-        let time = a[0].time;
-        let high = a[0].high;
-        let low = a[0].low;
-        let close = a[0].close;
-        let open = a[0].open;
-        //
-
-        for (let x of a) {
-          // 만약 가져온 값중 이게더 고가면 고가로 설정
-          if (x.high > high) high = x.high;
-          // 만약 가져온 값중 이게더 저가면 저가로설정
-          if (x.low < low) low = x.low;
-          // 종가
-          close = x.close;
-        }
-        candle.push({ time, open, close, high, low });
-      }
-
-      // 3개씩 만들고 남은캔들에 대하여 다시 고가저가 탐색
-      const lastCandle = { ...minutesCandle };
-
-      if (arr.length) {
-        // console.log("arr :", arr);
-        lastCandle.open = arr[0].open;
-        for (let i = 0; i < arr.length; i++) {
-          if (lastCandle.high < arr[i].high) lastCandle.high = arr[i].high;
-          if (lastCandle.low > arr[i].low) lastCandle.low = arr[i].low;
-        }
-      }
-
-      // console.log("new 10minute", candle);
-      // console.log(chart.candlestickSeries[0].data);
-
-      setChart({
-        ...chart,
-        candlestickSeries: [
-          {
-            data: [...candle, lastCandle],
-          },
-        ],
-      });
-    } else if (num === 60) {
-      console.log("60");
+      candle.push({ time, open, close, high, low });
+      volume.push({ time, value });
     }
+
+    const lastCandle = { ...minutesCandle };
+    const lastVolumeCandle = { ...volumeCandle };
+
+    if (arr.length) {
+      lastCandle.open = arr[0].open;
+      for (let i = 0; i < arr.length; i++) {
+        if (lastCandle.high < arr[i].high) lastCandle.high = arr[i].high;
+        if (lastCandle.low > arr[i].low) lastCandle.low = arr[i].low;
+      }
+
+      for (let i = 0; i < arr2.length; i++) {
+        lastVolumeCandle.value += arr2[i].value;
+      }
+    }
+    setChart({
+      ...chart,
+      candlestickSeries: [
+        {
+          data: [...candle, lastCandle],
+        },
+      ],
+      histogramSeries: [
+        {
+          data: [...volume, lastVolumeCandle],
+        },
+      ],
+    });
+  }
+
+  function makeCandle(num) {
+    if (num === 1) makeMinutesCandle(1);
+    else if (num === 3) makeMinutesCandle(3);
+    else if (num === 5) makeMinutesCandle(5);
+    else if (num === 10) makeMinutesCandle(10);
+    else if (num === 30) makeMinutesCandle(30);
+    else if (num === 60) makeMinutesCandle(60);
   }
 
   useEffect(() => {
     if (!isPlay) return;
-    // 1분이 지날떄마다 마지막 캔들을 등록함.
     else if (
       new Date(tic_trade_timestamp[tickerIndex]).getMinutes() !== minutes
     ) {
       if (minutes + 1 === 60) setMinutes(0);
       else setMinutes((prev) => prev + 1);
-
-      // 만들어진 1분봉 저장
-
-      // ************************************** //
-      // 갔다오면 이부분 수정!!!
-
-      // setCandleArray(
-      //   candleArray.concat(
-      //     chart.candlestickSeries[0].data[
-      //       chart.candlestickSeries[0].data.length - 1
-      //     ]
-      //   )
-      // );
 
       setCandleArray(candleArray.concat(minutesCandle));
       setVolumeArray(volumeArray.concat(volumeCandle));
@@ -466,17 +206,8 @@ const LightChart = () => {
       });
 
       setVolumeCandle(0);
-      // ************************************** //
 
       console.log("1분봉 추가", candleArray);
-      // 거래량
-      // setVolumeArray(
-      //   volumeArray.concat(
-      //     chart.histogramSeries[0].data[
-      //       chart.histogramSeries[0].data.length - 1
-      //     ]
-      //   )
-      // );
 
       //차트에 캔들추가
       if (
@@ -546,42 +277,15 @@ const LightChart = () => {
             : tic_trade_price[tickerIndex],
       });
 
-      // if (type === 1) {
-      //   setMinutesCandle({
-      //     time: price.time,
-      //     open: price.open,
-      //     close: price.close,
-      //     high: price.high,
-      //     low: price.low,
-      //   });
-      // } else {
-      //   setMinutesCandle({
-      //     time: price.time,
-      //     open: candleArray[candleArray.length - 1].close,
-      //     close: tic_trade_price[tickerIndex],
-      //     high:
-      //       minutesCandle.high > tic_trade_price[tickerIndex]
-      //         ? minutesCandle.high
-      //         : tic_trade_price[tickerIndex],
-      //     low:
-      //       minutesCandle.low > tic_trade_price[tickerIndex]
-      //         ? tic_trade_price[tickerIndex]
-      //         : minutesCandle.low,
-      //   });
-      // }
-
-      setVolumeCandle((prev) => prev + tic_trade_volume[tickerIndex]);
-
       // volume candle
       const volume = chart.histogramSeries[0].data.pop();
 
       // // console.log(price);
       // // console.log(volume);
-      if (
-        tic_trade_timestamp[tickerIndex] >= tic_trade_timestamp[tickerIndex]
-      ) {
-        volume.value += tic_trade_volume[tickerIndex];
-      }
+
+      volume.value += tic_trade_volume[tickerIndex];
+
+      setVolumeCandle({ time: price.time, value: volume.value });
 
       setChart({
         ...chart,
@@ -623,12 +327,12 @@ const LightChart = () => {
           candlestickSeries={chart.candlestickSeries}
           width={500}
         />
-        {/* <Chart
+        <Chart
           options={chart}
           histogramSeries={chart.histogramSeries}
           height={200}
           width={500}
-        /> */}
+        />
       </div>
     </>
   );

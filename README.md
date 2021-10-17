@@ -465,5 +465,6 @@ tickerDispatch({
 ## 10/17~
 
 - [x] 분봉을 눌렀을때 price candle chart update (1/3/5/10/30 분봉 구현)
-- [ ] 분봉을 눌렀을때 volume candle chart update
+- [x] 분봉을 눌렀을때 volume candle chart update
+- [ ] 시간 이동을 했을때 그시각까지의 price/volume chart update
 
