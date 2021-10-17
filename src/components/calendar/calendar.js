@@ -17,7 +17,7 @@ const Calendar = () => {
     dispatch({
       type: actionType.SELECT_DAY,
       // 임의로 시작시간 정함
-      timestamp: +new Date(1633783053586),
+      timestamp: +new Date(1633783203586),
       // timestamp: +new Date(event) + 32400000,
     });
   };

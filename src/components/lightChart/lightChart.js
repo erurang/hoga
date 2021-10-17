@@ -23,10 +23,20 @@ const LightChart = () => {
     new Date(tic_trade_timestamp[tickerIndex]).getMinutes()
   );
 
+  const [minutesCandle, setMinutesCandle] = useState({
+    time: tic_trade_timestamp[0],
+    open: tic_trade_price[0],
+    close: tic_trade_price[0],
+    high: tic_trade_price[0],
+    low: tic_trade_price[0],
+  });
+
+  const [volumeCandle, setVolumeCandle] = useState(0);
+
   const [candleArray, setCandleArray] = useState([]);
   const [volumeArray, setVolumeArray] = useState([]);
 
-  const [type, setType] = useState(3);
+  const [type, setType] = useState(1);
 
   const [chart, setChart] = useState({
     options: {
@@ -79,53 +89,56 @@ const LightChart = () => {
         ],
       },
     ],
-    // histogramSeries: [
-    //   {
-    //     data: [
-    //       {
-    //         time: tic_trade_timestamp[0],
-    //         value: 0,
-    //       },
-    //     ],
-    //   },
-    // ],
+    histogramSeries: [
+      {
+        data: [
+          {
+            time: tic_trade_timestamp[0],
+            value: 0,
+          },
+        ],
+      },
+    ],
   });
 
   function handlePlusTimerButton(number) {
     // isPlayDispatch({ type: actionType.SET_IS_PLAY, play: false });
     const num = +number.target.innerText;
-    makeCandle(num);
+
+    if (num !== type && candleArray.length > num - 1) {
+      makeCandle(num);
+      setType(num);
+      isPlayDispatch({ type: actionType.SET_IS_PLAY, play: false });
+    }
   }
 
   function makeCandle(num) {
     // isPlayDispatch({ type: actionType.SET_IS_PLAY, play: false });
 
     if (num === 1) {
-      setType(1);
-      console.log("1");
-      console.log("candlearray:", candleArray);
+      // console.log("1");
+      // console.log("candlearray:", candleArray);
 
-      const candle = [
-        ...candleArray,
-        chart.candlestickSeries[0].data[
-          chart.candlestickSeries[0].data.length - 1
+      const candle = [...candleArray, minutesCandle];
+
+      // console.log(candle);
+
+      setChart({
+        ...chart,
+        candlestickSeries: [
+          {
+            data: [...candle],
+          },
         ],
-      ];
-
-      console.log(candle);
-
-      // setChart({
-      //   ...chart,
-      //   candlestickSeries: [
-      //     {
-      //       data: [...candle],
-      //     },
-      //   ],
-      // });
+        // histogramSeries: [
+        //   {
+        //     data: [...volumeArray],
+        //   },
+        // ],
+      });
     } else if (num === 3) {
-      setType(3);
-      console.log("3");
-      console.log("candleArray", candleArray);
+      // console.log("3");
+      // console.log("candleArray", candleArray);
 
       // 여태 만들어진 1분봉을 복사해온다
       let arr = [...candleArray];
@@ -133,10 +146,6 @@ const LightChart = () => {
 
       // 만약 만들어진 1분봉이 하나도 없으면 (타이머 막시작했을떄)
       // 최소 3개이상 캔들이 필요합니다. 메세지띄우기
-      if (candleArray.length < 3) {
-        console.log("최소 3개의 캔들이 필요함..");
-        return;
-      }
 
       const candle = [];
       const volume = [];
@@ -147,6 +156,7 @@ const LightChart = () => {
       // 3개씩 묶어서 배열에서 뺴낸다.
       for (let i = 0; i < divide; i++) {
         const a = arr.splice(0, 3);
+        // console.log(a);
 
         // 시작시간은 초기시간
         let time = a[0].time;
@@ -168,18 +178,19 @@ const LightChart = () => {
       }
 
       // 3개씩 만들고 남은캔들에 대하여 다시 고가저가 탐색
-      const lastCandle =
-        chart.candlestickSeries[0].data[
-          chart.candlestickSeries[0].data.length - 1
-        ];
+      const lastCandle = { ...minutesCandle };
 
-      for (let i = 0; i < arr.length; i++) {
-        if (lastCandle.high < arr[i].high) lastCandle.high = arr[i].high;
-        if (lastCandle.low > arr[i].low) lastCandle.low = arr[i].low;
+      if (arr.length) {
+        // console.log("arr :", arr);
+        lastCandle.open = arr[0].open;
+        for (let i = 0; i < arr.length; i++) {
+          if (lastCandle.high < arr[i].high) lastCandle.high = arr[i].high;
+          if (lastCandle.low > arr[i].low) lastCandle.low = arr[i].low;
+        }
       }
 
-      console.log("new 3minute", candle);
-      console.log(chart.candlestickSeries[0].data);
+      // console.log("new 3minute", candle);
+      // console.log(chart.candlestickSeries[0].data);
 
       setChart({
         ...chart,
@@ -189,6 +200,8 @@ const LightChart = () => {
           },
         ],
       });
+
+      // volume
       // for (let i = 0; i < divide; i++) {
       //   const b = arr2.splice(0, 3);
       //   let value = 0;
@@ -198,6 +211,12 @@ const LightChart = () => {
       //     value += x.value;
       //   }
       //   volume.push({ time, value });
+      // }
+
+      // const lastVolumeCandle = volumeCandle;
+
+      // for (let i = 0; i < arr2.length; i++) {
+      //   lastVolumeCandle[i].value
       // }
 
       // console.log(candle);
@@ -220,35 +239,194 @@ const LightChart = () => {
       //   // ],
       // });
     } else if (num === 5) {
-      console.log("5");
-      // 5개씩 짜르자.
-      const arr = [...candleArray];
+      // console.log("5");
+      // console.log("candleArray", candleArray);
+
+      // 여태 만들어진 1분봉을 복사해온다
+      let arr = [...candleArray];
+      let arr2 = [...volumeArray];
+
+      // 만약 만들어진 1분봉이 하나도 없으면 (타이머 막시작했을떄)
+      // 최소 3개이상 캔들이 필요합니다. 메세지띄우기
 
       const candle = [];
       const volume = [];
 
-      const a = arr.splice(0, 5);
+      // 3개씩 캔들을 나눈다.
+      const divide = parseInt(arr.length / 5);
 
-      let time = a[0].time;
-      let high = a[0].high;
-      let low = a[0].low;
-      let close = a[0].close;
-      let open = a[0].open;
+      // 3개씩 묶어서 배열에서 뺴낸다.
+      for (let i = 0; i < divide; i++) {
+        const a = arr.splice(0, 5);
 
-      for (let x of a) {
-        if (x.high > high) high = x.high;
-        if (x.low < low) low = x.low;
-        open = x.open;
-        close = x.open;
+        // 시작시간은 초기시간
+        let time = a[0].time;
+        let high = a[0].high;
+        let low = a[0].low;
+        let close = a[0].close;
+        let open = a[0].open;
+        //
+
+        for (let x of a) {
+          // 만약 가져온 값중 이게더 고가면 고가로 설정
+          if (x.high > high) high = x.high;
+          // 만약 가져온 값중 이게더 저가면 저가로설정
+          if (x.low < low) low = x.low;
+          // 종가
+          close = x.close;
+        }
+        candle.push({ time, open, close, high, low });
       }
 
-      candle.push({ time, open, close, high, low });
+      // 3개씩 만들고 남은캔들에 대하여 다시 고가저가 탐색
+      const lastCandle = { ...minutesCandle };
 
-      console.log(candle);
+      if (arr.length) {
+        // console.log("arr :", arr);
+        lastCandle.open = arr[0].open;
+        for (let i = 0; i < arr.length; i++) {
+          if (lastCandle.high < arr[i].high) lastCandle.high = arr[i].high;
+          if (lastCandle.low > arr[i].low) lastCandle.low = arr[i].low;
+        }
+      }
+
+      // console.log("new 5minute", candle);
+      // console.log(chart.candlestickSeries[0].data);
+
+      setChart({
+        ...chart,
+        candlestickSeries: [
+          {
+            data: [...candle, lastCandle],
+          },
+        ],
+      });
     } else if (num === 10) {
-      console.log("10");
+      // console.log("10");
+      // console.log("candleArray", candleArray);
+
+      // 여태 만들어진 1분봉을 복사해온다
+      let arr = [...candleArray];
+      let arr2 = [...volumeArray];
+
+      // 만약 만들어진 1분봉이 하나도 없으면 (타이머 막시작했을떄)
+      // 최소 3개이상 캔들이 필요합니다. 메세지띄우기
+
+      const candle = [];
+      const volume = [];
+
+      // 3개씩 캔들을 나눈다.
+      const divide = parseInt(arr.length / 10);
+
+      // 3개씩 묶어서 배열에서 뺴낸다.
+      for (let i = 0; i < divide; i++) {
+        const a = arr.splice(0, 10);
+
+        // 시작시간은 초기시간
+        let time = a[0].time;
+        let high = a[0].high;
+        let low = a[0].low;
+        let close = a[0].close;
+        let open = a[0].open;
+        //
+
+        for (let x of a) {
+          // 만약 가져온 값중 이게더 고가면 고가로 설정
+          if (x.high > high) high = x.high;
+          // 만약 가져온 값중 이게더 저가면 저가로설정
+          if (x.low < low) low = x.low;
+          // 종가
+          close = x.close;
+        }
+        candle.push({ time, open, close, high, low });
+      }
+
+      // 3개씩 만들고 남은캔들에 대하여 다시 고가저가 탐색
+      const lastCandle = { ...minutesCandle };
+
+      if (arr.length) {
+        // console.log("arr :", arr);
+        lastCandle.open = arr[0].open;
+        for (let i = 0; i < arr.length; i++) {
+          if (lastCandle.high < arr[i].high) lastCandle.high = arr[i].high;
+          if (lastCandle.low > arr[i].low) lastCandle.low = arr[i].low;
+        }
+      }
+
+      // console.log("new 10minute", candle);
+      // console.log(chart.candlestickSeries[0].data);
+
+      setChart({
+        ...chart,
+        candlestickSeries: [
+          {
+            data: [...candle, lastCandle],
+          },
+        ],
+      });
     } else if (num === 30) {
-      console.log("30");
+      // console.log("10");
+      // console.log("candleArray", candleArray);
+
+      // 여태 만들어진 1분봉을 복사해온다
+      let arr = [...candleArray];
+      let arr2 = [...volumeArray];
+
+      // 만약 만들어진 1분봉이 하나도 없으면 (타이머 막시작했을떄)
+      // 최소 3개이상 캔들이 필요합니다. 메세지띄우기
+
+      const candle = [];
+      const volume = [];
+
+      // 3개씩 캔들을 나눈다.
+      const divide = parseInt(arr.length / 30);
+
+      // 3개씩 묶어서 배열에서 뺴낸다.
+      for (let i = 0; i < divide; i++) {
+        const a = arr.splice(0, 30);
+
+        // 시작시간은 초기시간
+        let time = a[0].time;
+        let high = a[0].high;
+        let low = a[0].low;
+        let close = a[0].close;
+        let open = a[0].open;
+        //
+
+        for (let x of a) {
+          // 만약 가져온 값중 이게더 고가면 고가로 설정
+          if (x.high > high) high = x.high;
+          // 만약 가져온 값중 이게더 저가면 저가로설정
+          if (x.low < low) low = x.low;
+          // 종가
+          close = x.close;
+        }
+        candle.push({ time, open, close, high, low });
+      }
+
+      // 3개씩 만들고 남은캔들에 대하여 다시 고가저가 탐색
+      const lastCandle = { ...minutesCandle };
+
+      if (arr.length) {
+        // console.log("arr :", arr);
+        lastCandle.open = arr[0].open;
+        for (let i = 0; i < arr.length; i++) {
+          if (lastCandle.high < arr[i].high) lastCandle.high = arr[i].high;
+          if (lastCandle.low > arr[i].low) lastCandle.low = arr[i].low;
+        }
+      }
+
+      // console.log("new 10minute", candle);
+      // console.log(chart.candlestickSeries[0].data);
+
+      setChart({
+        ...chart,
+        candlestickSeries: [
+          {
+            data: [...candle, lastCandle],
+          },
+        ],
+      });
     } else if (num === 60) {
       console.log("60");
     }
@@ -260,24 +438,37 @@ const LightChart = () => {
     else if (
       new Date(tic_trade_timestamp[tickerIndex]).getMinutes() !== minutes
     ) {
-      console.log("다름ㅇㅇ", tic_trade_timestamp[tickerIndex]);
       if (minutes + 1 === 60) setMinutes(0);
       else setMinutes((prev) => prev + 1);
 
       // 만들어진 1분봉 저장
-      console.log(
-        "실행됨ㅇㅇ",
-        chart.candlestickSeries[0].data[
-          chart.candlestickSeries[0].data.length - 1
-        ]
-      );
-      setCandleArray(
-        candleArray.concat(
-          chart.candlestickSeries[0].data[
-            chart.candlestickSeries[0].data.length - 1
-          ]
-        )
-      );
+
+      // ************************************** //
+      // 갔다오면 이부분 수정!!!
+
+      // setCandleArray(
+      //   candleArray.concat(
+      //     chart.candlestickSeries[0].data[
+      //       chart.candlestickSeries[0].data.length - 1
+      //     ]
+      //   )
+      // );
+
+      setCandleArray(candleArray.concat(minutesCandle));
+      setVolumeArray(volumeArray.concat(volumeCandle));
+
+      setMinutesCandle({
+        time: tic_trade_timestamp[tickerIndex],
+        open: tic_trade_price[tickerIndex],
+        close: tic_trade_price[tickerIndex],
+        high: tic_trade_price[tickerIndex],
+        low: tic_trade_price[tickerIndex],
+      });
+
+      setVolumeCandle(0);
+      // ************************************** //
+
+      console.log("1분봉 추가", candleArray);
       // 거래량
       // setVolumeArray(
       //   volumeArray.concat(
@@ -292,10 +483,6 @@ const LightChart = () => {
         new Date(tic_trade_timestamp[tickerIndex]).getMinutes() % type ===
         0
       ) {
-        console.log(
-          "캔들추가 ㅇㅇ",
-          new Date(tic_trade_timestamp[tickerIndex])
-        );
         setChart({
           ...chart,
           candlestickSeries: [
@@ -312,17 +499,17 @@ const LightChart = () => {
               ],
             },
           ],
-          // histogramSeries: [
-          //   {
-          //     data: [
-          //       ...chart.histogramSeries[0].data,
-          //       {
-          //         time: tic_trade_timestamp[tickerIndex],
-          //         value: 0,
-          //       },
-          //     ],
-          //   },
-          // ],
+          histogramSeries: [
+            {
+              data: [
+                ...chart.histogramSeries[0].data,
+                {
+                  time: tic_trade_timestamp[tickerIndex],
+                  value: 0,
+                },
+              ],
+            },
+          ],
         });
       }
     } else {
@@ -330,7 +517,7 @@ const LightChart = () => {
       const price = chart.candlestickSeries[0].data.pop();
 
       // console.log(price);
-      price.time = tic_trade_timestamp[tickerIndex] + 86400000;
+      price.time = tic_trade_timestamp[tickerIndex];
 
       price.high =
         price.high < tic_trade_price[tickerIndex]
@@ -345,16 +532,56 @@ const LightChart = () => {
 
       price.close = tic_trade_price[tickerIndex];
 
+      setMinutesCandle({
+        time: price.time,
+        open: minutesCandle.open,
+        close: tic_trade_price[tickerIndex],
+        high:
+          tic_trade_price[tickerIndex] > minutesCandle.high
+            ? tic_trade_price[tickerIndex]
+            : minutesCandle.high,
+        low:
+          tic_trade_price[tickerIndex] > minutesCandle.low
+            ? minutesCandle.low
+            : tic_trade_price[tickerIndex],
+      });
+
+      // if (type === 1) {
+      //   setMinutesCandle({
+      //     time: price.time,
+      //     open: price.open,
+      //     close: price.close,
+      //     high: price.high,
+      //     low: price.low,
+      //   });
+      // } else {
+      //   setMinutesCandle({
+      //     time: price.time,
+      //     open: candleArray[candleArray.length - 1].close,
+      //     close: tic_trade_price[tickerIndex],
+      //     high:
+      //       minutesCandle.high > tic_trade_price[tickerIndex]
+      //         ? minutesCandle.high
+      //         : tic_trade_price[tickerIndex],
+      //     low:
+      //       minutesCandle.low > tic_trade_price[tickerIndex]
+      //         ? tic_trade_price[tickerIndex]
+      //         : minutesCandle.low,
+      //   });
+      // }
+
+      setVolumeCandle((prev) => prev + tic_trade_volume[tickerIndex]);
+
       // volume candle
-      // const volume = chart.histogramSeries[0].data.pop();
+      const volume = chart.histogramSeries[0].data.pop();
 
       // // console.log(price);
       // // console.log(volume);
-      // if (
-      //   tic_trade_timestamp[tickerIndex] >= tic_trade_timestamp[tickerIndex]
-      // ) {
-      //   volume.value += tic_trade_volume[tickerIndex];
-      // }
+      if (
+        tic_trade_timestamp[tickerIndex] >= tic_trade_timestamp[tickerIndex]
+      ) {
+        volume.value += tic_trade_volume[tickerIndex];
+      }
 
       setChart({
         ...chart,
@@ -363,17 +590,11 @@ const LightChart = () => {
             data: [...chart.candlestickSeries[0].data, price],
           },
         ],
-        // histogramSeries: [
-        //   {
-        //     data: [
-        //       ...chart.histogramSeries[0].data,
-        //       {
-        //         time: tic_trade_timestamp[tickerIndex],
-        //         value: 0,
-        //       },
-        //     ],
-        //   },
-        // ],
+        histogramSeries: [
+          {
+            data: [...chart.histogramSeries[0].data, volume],
+          },
+        ],
       });
     }
   }, [tickerIndex, isPlay]);
@@ -392,6 +613,9 @@ const LightChart = () => {
           number={30}
           handlePlusTimerButton={handlePlusTimerButton}
         />
+        <button onClick={() => console.log(candleArray)}>candlearray</button>
+        <button onClick={() => console.log(minutesCandle)}>minutes</button>
+        <button onClick={() => console.log(type)}>type</button>
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
         <Chart

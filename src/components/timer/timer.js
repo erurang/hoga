@@ -146,7 +146,7 @@ const Timer = () => {
         milliseconds: time.milliseconds + 1,
         timestamp: time.timestamp + 10,
       });
-    }, 10);
+    }, 1);
 
     if (time.milliseconds >= 99) {
       setTime({
